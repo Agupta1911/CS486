@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <title>chatbot</title>
+</head>
+    <body>
+        <section id="doc-panel">
+            <H1>Document Management</H1>
+            <hr>
+            <div class="card" id="upload-form">
+                <h2>Upload Document</h2>
+                <input type="file" id="file-input"/>
+                <button id="upload-btn">Upload</button>
+            </div>
+            <div id="uploaded-docs">
+                <h2>Uploaded Documents</h2>
+                <div>
+                    <p> No Documents Uploaded Yet</p>
+                </div>
+            </div>
+            <div class="card" id="retrieval-method">
+                <h2>Retrieval Method</h2>
+                <select id="retrieval-method">
+                    <option value="">Select Retrieval Method</option>
+                    <option value="Semantic"> Semantic (Embeddings)</option>
+                    <option value="TF-IDF">TF-IDF (Keyword)</option>
+                </select>
+            </div>
+
+        </section>
+
+        <section id="chat-container">
+            <h1>AI Chat</h1>
+            <hr>
+            <div class="card" id="messages"></div>
+            <div id="input-area">
+                <textarea name="user-input" id="user-input" placeholder="Type a message..."></textarea>
+                <button id="send-btn">Send</button>
+            </div>
+        </section>
+    </body>
+</html>
