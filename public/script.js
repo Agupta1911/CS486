@@ -19,6 +19,25 @@ function sendMessage() {
 
     inputField.value = "";
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+    const retrievalMethod = retrievalDropdown.value;
+
+    fetch('/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text, retrievalMethod: retrievalMethod })
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Server response:', data);
+
+            const botMessage = document.createElement("p");
+            botMessage.textContent = 'Bot: "' + data.reply + '"';
+            messagesContainer.appendChild(botMessage);
+
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        })
+        .catch(error => console.error('Error:', error));
 }
 
 sendBtn.addEventListener('click', sendMessage);
