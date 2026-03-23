@@ -7,43 +7,35 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <title>chatbot</title>
+    <title>Chatbot Homepage</title>
 </head>
-    <body>
-        <section id="doc-panel">
-            <H1>Document Management</H1>
-            <hr>
-            <div class="card" id="upload-form">
-                <h2>Upload Document</h2>
-                <input type="file" id="file-input"/>
-                <button id="upload-btn">Upload</button>
+<body>
+    <section id="home-panel" style="flex: 1; text-align: center; max-width: 600px; margin: 50px auto;">
+        <h1>AI Chatbot Project</h1>
+        <hr>
+        <div class="card" style="margin-top: 20px; padding: 20px;">
+            <p>Welcome! This interactive chatbot allows you to ask questions and get context-aware answers using the OpenAI API.</p>
+            
+            <div style="margin-top: 20px;">
+                <label for="participant-id"><strong>Participant ID:</strong></label><br><br>
+                <input type="text" id="participant-id" placeholder="Enter ID here" style="padding: 8px; width: 60%; border: 1px solid #ccc; border-radius: 4px;" />
             </div>
-            <div id="uploaded-docs">
-                <h2>Uploaded Documents</h2>
-                <div>
-                    <p> No Documents Uploaded Yet</p>
-                </div>
-            </div>
-            <div class="card" id="retrieval-method">
-                <h2>Retrieval Method</h2>
-                <select id="retrieval-method">
-                    <option value="">Select Retrieval Method</option>
-                    <option value="Semantic"> Semantic (Embeddings)</option>
-                    <option value="TF-IDF">TF-IDF (Keyword)</option>
-                </select>
-            </div>
+            
+            <br>
+            <button id="start-btn">Join Chat</button>
+        </div>
+    </section>
 
-        </section>
-
-        <section id="chat-container">
-            <h1>AI Chat</h1>
-            <hr>
-            <div class="card" id="messages"></div>
-            <div id="input-area">
-                <textarea name="user-input" id="user-input" placeholder="Type a message..."></textarea>
-                <button id="send-btn">Send</button>
-            </div>
-        </section>
-        <script src="script.js"></script>
-    </body>
+    <script>
+        document.getElementById('start-btn').addEventListener('click', () => {
+            const partId = document.getElementById('participant-id').value.trim();
+            if (partId) {
+                localStorage.setItem('participantID', partId);
+                window.location.href = 'chat.html';
+            } else {
+                alert('Please enter a Participant ID.');
+            }
+        });
+    </script>
+</body>
 </html>

@@ -1,3 +1,8 @@
+const participantID = localStorage.getItem('participantID');
+if (!participantID && window.location.pathname.includes('chat.html')) {
+    window.location.href = 'index.html';
+}
+
 const inputField = document.getElementById('user-input');
 const sendBtn = document.getElementById('send-btn');
 const messagesContainer = document.getElementById('messages');
@@ -25,7 +30,7 @@ function sendMessage() {
     fetch('/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: text, retrievalMethod: retrievalMethod })
+        body: JSON.stringify({ message: text, retrievalMethod: retrievalMethod, participantID: participantID })
     })
         .then(response => response.json())
         .then(data => {
@@ -71,4 +76,58 @@ uploadBtn.addEventListener('click', function () {
     } else {
         console.log("No file chosen");
     }
+});
+
+window.onload = function() {
+    if (!participantID) return;
+    fetch('/history', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ participantID })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data && data.length > 0) {
+            data.forEach(interaction => {
+                const userMsg = document.createElement("p");
+                userMsg.textContent = "You: " + interaction.userInput;
+                messagesContainer.appendChild(userMsg);
+                
+                const botMsg = document.createElement("p");
+                botMsg.textContent = 'Bot: "' + interaction.botResponse + '"';
+                messagesContainer.appendChild(botMsg);
+            });
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+    })
+    .catch(err => console.error("Error loading history:", err));
+};
+
+function logEvent(eventType, elementName) {
+    if (!participantID) return;
+    fetch('/log-event', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            participantID,
+            eventType,
+            elementName,
+            timestamp: new Date().toISOString()
+        })
+    }).catch(err => console.error('Error logging event:', err));
+}
+
+document.addEventListener('click', (e) => {
+    let name = e.target.id || e.target.tagName;
+    logEvent('click', name);
+});
+
+const logInteract = (e) => {
+    let name = e.target.id || e.target.tagName;
+    logEvent(e.type === 'mouseenter' ? 'hover' : e.type, name);
+};
+
+document.querySelectorAll('button, input, textarea, select').forEach(el => {
+    el.addEventListener('focus', logInteract);
+    el.addEventListener('mouseenter', logInteract);
 });
