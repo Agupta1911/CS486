@@ -10,31 +10,35 @@
     <title>chatbot</title>
 </head>
     <body>
+        <!-- Left panel: Document Management -->
         <section id="doc-panel">
-            <H1>Document Management</H1>
+            <h1>Document Management</h1>
             <hr>
+
             <div class="card" id="upload-form">
                 <h2>Upload Document</h2>
-                <input type="file" id="file-input"/>
+                <input type="file" id="file-input" accept=".txt,.pdf,.md"/>
                 <button id="upload-btn">Upload</button>
+                <p id="upload-status" class="status-msg"></p>
             </div>
+
             <div id="uploaded-docs">
                 <h2>Uploaded Documents</h2>
-                <div>
-                    <p> No Documents Uploaded Yet</p>
-                </div>
+                <ul id="doc-list">
+                    <li class="no-docs">No documents uploaded yet</li>
+                </ul>
             </div>
-            <div class="card" id="retrieval-method">
+
+            <div class="card" id="retrieval-card">
                 <h2>Retrieval Method</h2>
                 <select id="retrieval-method">
-                    <option value="">Select Retrieval Method</option>
-                    <option value="Semantic"> Semantic (Embeddings)</option>
-                    <option value="TF-IDF">TF-IDF (Keyword)</option>
+                    <option value="semantic">Semantic (Embeddings)</option>
+                    <option value="tfidf">TF-IDF (Keyword)</option>
                 </select>
             </div>
-
         </section>
 
+        <!-- Middle panel: Chat -->
         <section id="chat-container">
             <h1>AI Chat</h1>
             <hr>
@@ -44,6 +48,27 @@
                 <button id="send-btn">Send</button>
             </div>
         </section>
+
+        <!-- Right panel: Evidence & Confidence -->
+        <section id="evidence-panel">
+            <h1>Evidence &amp; Confidence</h1>
+            <hr>
+
+            <div class="card" id="confidence-card">
+                <h2>Confidence Score</h2>
+                <div id="confidence-display">
+                    <p class="no-data">Send a message to see confidence.</p>
+                </div>
+            </div>
+
+            <div id="evidence-section">
+                <h2>Retrieved Evidence</h2>
+                <div id="evidence-items">
+                    <p class="no-data">No evidence retrieved yet.</p>
+                </div>
+            </div>
+        </section>
+
         <script src="script.js"></script>
     </body>
 </html>

@@ -9,6 +9,130 @@ body{
     margin: 0;
 }
 
+/* ── Evidence panel ─────────────────────────────────────────────── */
+#evidence-panel {
+    flex: 1;
+    height: calc(100vh - 30px);
+    overflow-y: auto;
+}
+
+.no-data {
+    color: #888;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.status-msg {
+    font-size: 0.85rem;
+    margin: 4px 0 0;
+    min-height: 1.2em;
+}
+
+/* Confidence display */
+.confidence-score {
+    font-size: 1.6rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.conf-label {
+    font-size: 1rem;
+    font-weight: 400;
+}
+
+.conf-detail {
+    font-size: 0.82rem;
+    color: #555;
+    margin-top: 4px;
+}
+
+/* Evidence cards */
+#evidence-section {
+    border-radius: 5px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+#evidence-section h2 {
+    margin-bottom: 6px;
+}
+
+.evidence-card {
+    background: rgb(240, 242, 245);
+    border: 1px solid rgb(210, 215, 225);
+    border-radius: 5px;
+    padding: 8px 10px;
+    font-size: 0.82rem;
+}
+
+.evidence-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+}
+
+.evidence-num {
+    font-weight: 700;
+    color: rgb(37, 122, 201);
+}
+
+.evidence-score {
+    color: #555;
+    font-size: 0.8rem;
+}
+
+.evidence-text {
+    margin: 0;
+    color: #333;
+    line-height: 1.4;
+    word-break: break-word;
+}
+
+/* Doc list */
+#doc-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.doc-item {
+    font-size: 0.88rem;
+    padding: 4px 6px;
+    background: rgb(240, 242, 245);
+    border-radius: 4px;
+    border: 1px solid rgb(220, 220, 220);
+    word-break: break-word;
+}
+
+.no-docs {
+    color: #888;
+    font-size: 0.88rem;
+}
+
+/* Chat message styles */
+.msg-user {
+    text-align: right;
+    color: rgb(37, 122, 201);
+    margin: 0;
+}
+
+.msg-bot {
+    text-align: left;
+    margin: 0;
+}
+
+.msg-system {
+    text-align: center;
+    color: gray;
+    font-size: 0.85rem;
+    margin: 0;
+}
+
 section{
     display: flex;
     flex-direction: column;
