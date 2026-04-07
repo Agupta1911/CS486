@@ -135,20 +135,20 @@ app.get('/documents', async (_req, res) => {
 
 // POST /chat — RAG-augmented chat
 app.post('/chat', async (req, res) => {
-    const { message, participantID, retrievalMethod } = req.body;
+    const { history = [], input: userInput, participantID, systemID, retrievalMethod = 'semantic' } = req.body;
 
-    if (!message || !participantID) {
-        return res.status(400).json({ error: 'message and participantID are required' });
+    if (!userInput || !participantID) {
+        return res.status(400).json({ error: 'input and participantID are required' });
     }
 
     try {
-        const method = (retrievalMethod || 'semantic').toLowerCase();
+        const method = retrievalMethod.toLowerCase();
         let retrievedEvidence = [];
 
         // ── Retrieval ─────────────────────────────────────────────────────────
         if (method === 'tfidf' || method === 'tf-idf') {
             // TF-IDF: use in-memory index
-            const results = retrievalService.retrieveTFIDF(message, 3);
+            const results = retrievalService.retrieveTFIDF(userInput, 3);
             retrievedEvidence = results.map(r => ({ chunk: r.chunk, score: r.score }));
         } else {
             // Semantic: embed the query, then compare against stored chunk embeddings
@@ -161,7 +161,7 @@ app.post('/chat', async (req, res) => {
             );
 
             if (allChunks.length > 0) {
-                const queryEmbedding = await embeddingService.generateEmbedding(message);
+                const queryEmbedding = await embeddingService.generateEmbedding(userInput);
                 const results = retrievalService.retrieveSemantic(queryEmbedding, allChunks, 3);
                 retrievedEvidence = results.map(r => ({ chunk: r.chunk, score: r.score }));
             }
@@ -169,6 +169,13 @@ app.post('/chat', async (req, res) => {
 
         // ── Confidence ────────────────────────────────────────────────────────
         const confidenceMetrics = confidenceCalculator.calculateConfidence(retrievedEvidence);
+
+        // ── Sanitize and build conversation history for OpenAI ────────────────
+        const safeHistory = Array.isArray(history)
+            ? history
+                .filter(m => m && (m.role === 'user' || m.role === 'assistant'))
+                .map(m => ({ role: m.role, content: String(m.content ?? '') }))
+            : [];
 
         // ── Build RAG prompt ──────────────────────────────────────────────────
         const messages = [];
@@ -183,7 +190,13 @@ app.post('/chat', async (req, res) => {
         } else {
             messages.push({ role: 'system', content: 'You are a helpful assistant.' });
         }
-        messages.push({ role: 'user', content: message });
+
+        // ── Inject prior conversation turns then current user message ─────────
+        const input = safeHistory.length === 0
+            ? [{ role: 'user', content: userInput }]
+            : [...safeHistory, { role: 'user', content: userInput }];
+
+        messages.push(...input);
 
         // ── Call OpenAI ───────────────────────────────────────────────────────
         const completion = await openai.chat.completions.create({
@@ -195,7 +208,8 @@ app.post('/chat', async (req, res) => {
         // ── Persist interaction ───────────────────────────────────────────────
         await Interaction.create({
             participantID,
-            userInput:         message,
+            systemID,
+            userInput,
             botResponse,
             retrievalMethod:   method,
             retrievedEvidence,
@@ -211,7 +225,7 @@ app.post('/chat', async (req, res) => {
 
 // POST /log-event — log user interaction events to MongoDB
 app.post('/log-event', async (req, res) => {
-    const { participantID, eventType, elementName, timestamp } = req.body;
+    const { participantID, systemID, eventType, elementName, timestamp } = req.body;
 
     if (!participantID || !eventType || !elementName) {
         return res.status(400).json({ error: 'participantID, eventType, and elementName are required' });
@@ -220,6 +234,7 @@ app.post('/log-event', async (req, res) => {
     try {
         await EventLog.create({
             participantID,
+            systemID,
             eventType,
             elementName,
             timestamp: timestamp ? new Date(timestamp) : new Date()
@@ -231,20 +246,51 @@ app.post('/log-event', async (req, res) => {
     }
 });
 
-// POST /history — return chat history for a participant
+// POST /history — return last N interactions for a participant (for initial page load)
 app.post('/history', async (req, res) => {
+    const { participantID, limit } = req.body;
+
+    if (!participantID) {
+        return res.status(400).json({ error: 'participantID is required' });
+    }
+
+    const N = parseInt(limit) || 5;
+
+    try {
+        // Fetch the most recent N, then reverse to chronological order
+        const found = await Interaction
+            .find({ participantID })
+            .sort({ timestamp: -1 })
+            .limit(N);
+        const interactions = found.reverse();
+        res.json({ interactions });
+    } catch (err) {
+        console.error('History fetch error:', err);
+        res.status(500).json({ error: 'Failed to fetch history' });
+    }
+});
+
+// POST /conversationHistory — return last 5 interactions for initial page load
+app.post('/conversationHistory', async (req, res) => {
     const { participantID } = req.body;
 
     if (!participantID) {
         return res.status(400).json({ error: 'participantID is required' });
     }
 
+    const HISTORY_LIMIT = 5;
+
     try {
-        const history = await Interaction.find({ participantID }).sort({ timestamp: 1 });
+        // Fetch the most recent N interactions, then reverse to chronological order
+        const interactions = await Interaction
+            .find({ participantID })
+            .sort({ timestamp: -1 })
+            .limit(HISTORY_LIMIT);
+        const history = interactions.reverse();
         res.json(history);
     } catch (err) {
-        console.error('History fetch error:', err);
-        res.status(500).json({ error: 'Failed to fetch history' });
+        console.error('Conversation history fetch error:', err);
+        res.status(500).json({ error: 'Failed to fetch conversation history' });
     }
 });
 

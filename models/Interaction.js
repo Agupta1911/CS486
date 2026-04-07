@@ -14,6 +14,7 @@ const confidenceSchema = new mongoose.Schema({
 
 const interactionSchema = new mongoose.Schema({
     participantID:     { type: String, required: true },
+    systemID:          { type: Number },
     userInput:         { type: String, required: true },
     botResponse:       { type: String, required: true },
     retrievalMethod:   { type: String, default: 'semantic' },
