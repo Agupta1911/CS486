@@ -1,7 +1,14 @@
-const participantID = localStorage.getItem('participantID');
-if (!participantID && window.location.pathname.includes('chat.html')) {
-    window.location.href = 'index.html';
+const params = new URLSearchParams(window.location.search);
+const participantID = params.get('participantID') || localStorage.getItem('participantID');
+const systemID = params.get('systemID');
+
+if (!participantID) {
+    alert('Please enter a participant ID.');
+    window.location.href = '/';
 }
+
+const MAX_INTERACTIONS = 5;
+let conversationHistory = [];
 
 // ─── Element references ───────────────────────────────────────────────────────
 
@@ -150,11 +157,20 @@ function sendMessage() {
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
     const retrievalMethod = retrievalDropdown.value;
+    const recentHistory = conversationHistory.slice(-10);
+
+    const payload = {
+        message: text,
+        participantID,
+        systemID,
+        retrievalMethod,
+        conversationHistory: recentHistory
+    };
 
     fetch('/chat', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ message: text, retrievalMethod, participantID })
+        body:    JSON.stringify(payload)
     })
         .then(r => r.json())
         .then(data => {
@@ -164,7 +180,9 @@ function sendMessage() {
             messagesContainer.appendChild(botEl);
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
-            // Update evidence panel
+            conversationHistory.push({ role: 'user', content: text });
+            conversationHistory.push({ role: 'assistant', content: data.reply });
+
             renderConfidence(data.confidenceMetrics);
             renderEvidence(data.retrievedEvidence);
         })
@@ -188,33 +206,34 @@ retrievalDropdown.addEventListener('change', e => {
 
 // ─── Load history on page load ────────────────────────────────────────────────
 
+async function loadConversationHistory() {
+    const response = await fetch('/conversationHistory', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ participantID })
+    });
+    const data = await response.json();
+    if (data.interactions && data.interactions.length > 0) {
+        data.interactions.forEach(interaction => {
+            const userMsg = document.createElement('div');
+            userMsg.textContent = `You: ${interaction.userInput}`;
+            messagesContainer.appendChild(userMsg);
+
+            const botMsg = document.createElement('div');
+            botMsg.textContent = `Bot: ${interaction.botResponse}`;
+            messagesContainer.appendChild(botMsg);
+
+            conversationHistory.push({ role: 'user', content: interaction.userInput });
+            conversationHistory.push({ role: 'assistant', content: interaction.botResponse });
+        });
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+}
+
 window.onload = function () {
     if (!participantID) return;
-
     loadDocuments();
-
-    fetch('/history', {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ participantID })
-    })
-        .then(r => r.json())
-        .then(data => {
-            if (!data || data.length === 0) return;
-            data.forEach(interaction => {
-                const userMsg = document.createElement('p');
-                userMsg.className = 'msg-user';
-                userMsg.textContent = 'You: ' + interaction.userInput;
-                messagesContainer.appendChild(userMsg);
-
-                const botMsg = document.createElement('p');
-                botMsg.className = 'msg-bot';
-                botMsg.textContent = 'Bot: "' + interaction.botResponse + '"';
-                messagesContainer.appendChild(botMsg);
-            });
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        })
-        .catch(err => console.error('Error loading history:', err));
+    loadConversationHistory();
 };
 
 // ─── Event logging ────────────────────────────────────────────────────────────
@@ -226,6 +245,7 @@ function logEvent(eventType, elementName) {
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({
             participantID,
+            systemID,
             eventType,
             elementName,
             timestamp: new Date().toISOString()

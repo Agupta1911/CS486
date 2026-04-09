@@ -1,0 +1,39 @@
+HCAI Final Project – Milestone 1 Template
+Use this template to create the PDF you will submit to Canvas.
+1. Group Information
+2. Task Category
+Choose one: Creative information seeking / Conceptual understanding / Knowledge synthesis and summarization / Decision support or sensemaking / Other
+3. Target Audience
+Prompt: Who is this system for? Be specific. Do not just say “students” or “people.”
+Audience you want to support:
+[Write 2–4 sentences here.]
+Why this audience is important or interesting to support:
+[Write 2–4 sentences here.]
+Why this task matters for this audience:
+[Write 2–4 sentences here.]
+4. At Least Three Example Tasks
+Prompt: Give three concrete examples of what a user might try to do with your system.
+
+Example Task 1 (for category: Health information seeking / decision support)
+A patient who was recently diagnosed with Type 2 diabetes wants help understanding the diagnosis, comparing treatment options, and identifying lifestyle changes by interacting with a chatbot grounded in uploaded materials such as clinic handouts, provider-approved educational documents, and medication guides.
+
+Example Task 2 (for category: Conceptual understanding / learning)
+An undergraduate student studying for an earth science exam wants help understanding how lightning forms, including charge separation in clouds, the role of ice particles and collisions, and how a stepped leader and return stroke produce the visible lightning flash, using uploaded course notes, textbook excerpts, and diagrams.
+
+Example Task 3 (for category: Creative information seeking)
+A hobbyist game designer wants help developing a cozy mystery video game concept set in a small coastal town, including brainstorming characters, settings, mechanics, and narrative arcs, using uploaded inspiration documents such as story notes, art references, design guidelines, and examples of similar games.
+--- TABLES ---
+T[0] R[0] C[0]: Group member names
+T[0] R[0] C[1]: 
+T[1] R[0] C[0]: Selected task category
+T[1] R[0] C[1]: 
+T[1] R[1] C[0]: If “Other,” define it briefly
+T[1] R[1] C[1]: 
+T[2] R[0] C[0]: Task #
+T[2] R[0] C[1]: Specific example task
+T[2] R[1] C[0]: 1
+T[2] R[1] C[1]: [Describe a realistic, specific task your target user might complete.]
+T[2] R[2] C[0]: 2
+T[2] R[2] C[1]: [Describe a realistic, specific task your target user might complete.]
+T[2] R[3] C[0]: 3
+T[2] R[3] C[1]: [Describe a realistic, specific task your target user might complete.]

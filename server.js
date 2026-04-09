@@ -135,10 +135,10 @@ app.get('/documents', async (_req, res) => {
 
 // POST /chat — RAG-augmented chat
 app.post('/chat', async (req, res) => {
-    const { history = [], input: userInput, participantID, systemID, retrievalMethod = 'semantic' } = req.body;
+    const { conversationHistory = [], message: userInput, participantID, systemID, retrievalMethod = 'semantic' } = req.body;
 
     if (!userInput || !participantID) {
-        return res.status(400).json({ error: 'input and participantID are required' });
+        return res.status(400).json({ error: 'message and participantID are required' });
     }
 
     try {
@@ -171,8 +171,8 @@ app.post('/chat', async (req, res) => {
         const confidenceMetrics = confidenceCalculator.calculateConfidence(retrievedEvidence);
 
         // ── Sanitize and build conversation history for OpenAI ────────────────
-        const safeHistory = Array.isArray(history)
-            ? history
+        const safeHistory = Array.isArray(conversationHistory)
+            ? conversationHistory
                 .filter(m => m && (m.role === 'user' || m.role === 'assistant'))
                 .map(m => ({ role: m.role, content: String(m.content ?? '') }))
             : [];
@@ -278,16 +278,12 @@ app.post('/conversationHistory', async (req, res) => {
         return res.status(400).json({ error: 'participantID is required' });
     }
 
-    const HISTORY_LIMIT = 5;
-
     try {
-        // Fetch the most recent N interactions, then reverse to chronological order
         const interactions = await Interaction
             .find({ participantID })
             .sort({ timestamp: -1 })
-            .limit(HISTORY_LIMIT);
-        const history = interactions.reverse();
-        res.json(history);
+            .limit(5);
+        res.json({ interactions: interactions.reverse() });
     } catch (err) {
         console.error('Conversation history fetch error:', err);
         res.status(500).json({ error: 'Failed to fetch conversation history' });

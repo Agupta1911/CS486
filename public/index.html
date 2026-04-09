@@ -31,7 +31,8 @@
             const partId = document.getElementById('participant-id').value.trim();
             if (partId) {
                 localStorage.setItem('participantID', partId);
-                window.location.href = 'chat.html';
+                const systemID = parseInt(partId) % 2 === 1 ? 1 : 2;
+                window.location.href = `/chat.html?participantID=${partId}&systemID=${systemID}`;
             } else {
                 alert('Please enter a Participant ID.');
             }
