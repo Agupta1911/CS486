@@ -1,9 +1,14 @@
-const participantID = localStorage.getItem('participantID');
-if (!participantID && window.location.pathname.includes('chat.html')) {
+// ─── Participant & system ID (URL params take priority, fall back to localStorage) ──
+
+const params = new URLSearchParams(window.location.search);
+const participantID = params.get('participantID') || localStorage.getItem('participantID');
+const systemID = params.get('systemID') || localStorage.getItem('systemID');
+
+if (!participantID && (window.location.pathname.includes('chat.html') || window.location.pathname.includes('study-workflow.html'))) {
     window.location.href = 'index.html';
 }
 
-// ─── Element references ───────────────────────────────────────────────────────
+// ─── Element references (chat page only) ─────────────────────────────────────
 
 const inputField        = document.getElementById('user-input');
 const sendBtn           = document.getElementById('send-btn');
@@ -15,6 +20,41 @@ const uploadStatus      = document.getElementById('upload-status');
 const docList           = document.getElementById('doc-list');
 const confidenceDisplay = document.getElementById('confidence-display');
 const evidenceItems     = document.getElementById('evidence-items');
+
+// ─── Study Workflow page ──────────────────────────────────────────────────────
+
+function redirectToQualtrics() {
+    fetch('/redirect-to-survey', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ participantID })
+    })
+        .then(response => response.text())
+        .then(url => {
+            logEvent('redirect', 'Qualtrics Survey');
+            window.location.href = url;
+        })
+        .catch(error => {
+            console.error('Error redirecting to survey:', error);
+            alert('There was an error redirecting to the survey. Please try again.');
+        });
+}
+
+if (document.getElementById('survey-btn')) {
+    document.getElementById('survey-btn').addEventListener('click', redirectToQualtrics);
+}
+
+if (document.getElementById('prototype-btn')) {
+    document.getElementById('prototype-btn').addEventListener('click', () => {
+        window.location.href = `/chat.html?participantID=${encodeURIComponent(participantID)}&systemID=${encodeURIComponent(systemID)}`;
+    });
+}
+
+if (document.getElementById('task-btn')) {
+    document.getElementById('task-btn').addEventListener('click', () => {
+        alert('Add your task instructions here or link this button to a task page.');
+    });
+}
 
 // ─── Document list ────────────────────────────────────────────────────────────
 
@@ -41,7 +81,7 @@ function loadDocuments() {
 
 // ─── Upload ───────────────────────────────────────────────────────────────────
 
-uploadBtn.addEventListener('click', () => {
+if (uploadBtn) uploadBtn.addEventListener('click', () => {
     if (!fileInput.files || fileInput.files.length === 0) {
         uploadStatus.textContent = 'Please select a file first.';
         uploadStatus.style.color = '#c00';
@@ -171,13 +211,13 @@ function sendMessage() {
         .catch(err => console.error('Error:', err));
 }
 
-sendBtn.addEventListener('click', sendMessage);
+if (sendBtn) sendBtn.addEventListener('click', sendMessage);
 
-inputField.addEventListener('keypress', e => {
+if (inputField) inputField.addEventListener('keypress', e => {
     if (e.key === 'Enter') { e.preventDefault(); sendMessage(); }
 });
 
-retrievalDropdown.addEventListener('change', e => {
+if (retrievalDropdown) retrievalDropdown.addEventListener('change', e => {
     const msg = document.createElement('p');
     msg.className = 'msg-system';
     msg.textContent = 'System: Retrieval method changed to ' + e.target.value;
@@ -186,10 +226,10 @@ retrievalDropdown.addEventListener('change', e => {
     logEvent('change', 'retrieval-method');
 });
 
-// ─── Load history on page load ────────────────────────────────────────────────
+// ─── Load history on page load (chat page only) ───────────────────────────────
 
 window.onload = function () {
-    if (!participantID) return;
+    if (!participantID || !messagesContainer) return;
 
     loadDocuments();
 

@@ -251,3 +251,13 @@ textarea{
     font-size: 0.9rem;
 }
 
+
+
+/* ── Study Workflow buttons ─────────────────────────────────────────── */
+.workflow-btn {
+    width: 100%;
+    text-align: left;
+    padding: 12px 16px;
+    font-size: 1rem;
+    margin: 0;
+}

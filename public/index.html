@@ -31,7 +31,10 @@
             const partId = document.getElementById('participant-id').value.trim();
             if (partId) {
                 localStorage.setItem('participantID', partId);
-                window.location.href = 'chat.html';
+                // Randomly assign participant to system A or B
+                const systemID = Math.random() < 0.5 ? 'A' : 'B';
+                localStorage.setItem('systemID', systemID);
+                window.location.href = `/study-workflow.html?participantID=${encodeURIComponent(partId)}&systemID=${encodeURIComponent(systemID)}`;
             } else {
                 alert('Please enter a Participant ID.');
             }

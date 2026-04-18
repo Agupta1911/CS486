@@ -223,6 +223,16 @@ app.post('/chat', async (req, res) => {
     }
 });
 
+// POST /redirect-to-survey — build Qualtrics URL with participantID embedded
+app.post('/redirect-to-survey', (req, res) => {
+    const { participantID } = req.body;
+
+    const qualtricsBaseUrl = 'https://usfca.qualtrics.com/jfe/form/SV_7VREZRzBnA9Jv94';
+    const surveyUrl = `${qualtricsBaseUrl}?participantID=${encodeURIComponent(participantID)}`;
+
+    res.send(surveyUrl);
+});
+
 // POST /log-event — log user interaction events to MongoDB
 app.post('/log-event', async (req, res) => {
     const { participantID, systemID, eventType, elementName, timestamp } = req.body;
