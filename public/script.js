@@ -10,7 +10,55 @@ if (!participantID) {
 const MAX_INTERACTIONS = 5;
 let conversationHistory = [];
 
-// ─── Element references ───────────────────────────────────────────────────────
+// ─── Shared helpers (used on workflow + chat pages) ───────────────────────────
+
+function logEvent(eventType, elementName) {
+    if (!participantID) return;
+    fetch('/log-event', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({
+            participantID,
+            systemID,
+            eventType,
+            elementName,
+            timestamp: new Date().toISOString()
+        })
+    }).catch(err => console.error('Error logging event:', err));
+}
+
+function redirectToQualtrics() {
+    fetch('/redirect-to-survey', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ participantID })
+    })
+        .then(response => response.text())
+        .then(url => {
+            logEvent('redirect', 'Qualtrics Survey');
+            window.location.href = url;
+        })
+        .catch(error => {
+            console.error('Error redirecting to survey:', error);
+            alert('There was an error redirecting to the survey. Please try again.');
+        });
+}
+
+// ─── Study workflow page listeners ────────────────────────────────────────────
+
+const surveyBtn    = document.getElementById('survey-btn');
+const taskBtn      = document.getElementById('task-btn');
+const prototypeBtn = document.getElementById('prototype-btn');
+
+if (surveyBtn) surveyBtn.addEventListener('click', redirectToQualtrics);
+if (taskBtn) taskBtn.addEventListener('click', () => {
+    alert('Add your task instructions here or link this button to a task page.');
+});
+if (prototypeBtn) prototypeBtn.addEventListener('click', () => {
+    window.location.href = `/chat.html?participantID=${participantID}&systemID=${systemID}`;
+});
+
+// ─── Chat page element references ─────────────────────────────────────────────
 
 const inputField        = document.getElementById('user-input');
 const sendBtn           = document.getElementById('send-btn');
@@ -22,6 +70,8 @@ const uploadStatus      = document.getElementById('upload-status');
 const docList           = document.getElementById('doc-list');
 const confidenceDisplay = document.getElementById('confidence-display');
 const evidenceItems     = document.getElementById('evidence-items');
+
+const isChatPage = !!inputField;
 
 // ─── Document list ────────────────────────────────────────────────────────────
 
@@ -48,7 +98,7 @@ function loadDocuments() {
 
 // ─── Upload ───────────────────────────────────────────────────────────────────
 
-uploadBtn.addEventListener('click', () => {
+if (isChatPage) uploadBtn.addEventListener('click', () => {
     if (!fileInput.files || fileInput.files.length === 0) {
         uploadStatus.textContent = 'Please select a file first.';
         uploadStatus.style.color = '#c00';
@@ -189,20 +239,22 @@ function sendMessage() {
         .catch(err => console.error('Error:', err));
 }
 
-sendBtn.addEventListener('click', sendMessage);
+if (isChatPage) {
+    sendBtn.addEventListener('click', sendMessage);
 
-inputField.addEventListener('keypress', e => {
-    if (e.key === 'Enter') { e.preventDefault(); sendMessage(); }
-});
+    inputField.addEventListener('keypress', e => {
+        if (e.key === 'Enter') { e.preventDefault(); sendMessage(); }
+    });
 
-retrievalDropdown.addEventListener('change', e => {
-    const msg = document.createElement('p');
-    msg.className = 'msg-system';
-    msg.textContent = 'System: Retrieval method changed to ' + e.target.value;
-    messagesContainer.appendChild(msg);
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    logEvent('change', 'retrieval-method');
-});
+    retrievalDropdown.addEventListener('change', e => {
+        const msg = document.createElement('p');
+        msg.className = 'msg-system';
+        msg.textContent = 'System: Retrieval method changed to ' + e.target.value;
+        messagesContainer.appendChild(msg);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        logEvent('change', 'retrieval-method');
+    });
+}
 
 // ─── Load history on page load ────────────────────────────────────────────────
 
@@ -231,27 +283,12 @@ async function loadConversationHistory() {
 }
 
 window.onload = function () {
-    if (!participantID) return;
+    if (!participantID || !isChatPage) return;
     loadDocuments();
     loadConversationHistory();
 };
 
-// ─── Event logging ────────────────────────────────────────────────────────────
-
-function logEvent(eventType, elementName) {
-    if (!participantID) return;
-    fetch('/log-event', {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({
-            participantID,
-            systemID,
-            eventType,
-            elementName,
-            timestamp: new Date().toISOString()
-        })
-    }).catch(err => console.error('Error logging event:', err));
-}
+// ─── Global event logging ─────────────────────────────────────────────────────
 
 document.addEventListener('click', e => {
     const name = e.target.id || e.target.tagName;
