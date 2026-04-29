@@ -49,23 +49,22 @@
             </div>
         </section>
 
-        <!-- Right panel: Evidence & Confidence -->
-        <section id="evidence-panel">
-            <h1>Evidence &amp; Confidence</h1>
+        <!-- Right panel: Interactive Source Viewer -->
+        <section id="source-viewer">
+            <h1>Interactive Source Viewer</h1>
             <hr>
 
-            <div class="card" id="confidence-card">
-                <h2>Confidence Score</h2>
-                <div id="confidence-display">
-                    <p class="no-data">Send a message to see confidence.</p>
-                </div>
+            <div id="source-placeholder">
+                <p class="no-data">Click a <span class="citation-chip-demo">[citation]</span> in the chat to view the full source document here.</p>
             </div>
 
-            <div id="evidence-section">
-                <h2>Retrieved Evidence</h2>
-                <div id="evidence-items">
-                    <p class="no-data">No evidence retrieved yet.</p>
+            <div id="source-document">
+                <div id="source-header">
+                    <span id="source-filename"></span>
+                    <span id="source-close" title="Close viewer">✕</span>
                 </div>
+                <div id="source-content"></div>
+                <div id="source-statusbar"></div>
             </div>
         </section>
 

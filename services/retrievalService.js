@@ -2,21 +2,20 @@ const { cosineSimilarity } = require('../utils/vectorUtils');
 
 // ─── In-memory TF-IDF index ───────────────────────────────────────────────────
 
-let tfidfIndex = null; // { chunks, tokenizedChunks, docFreq, N }
+let tfidfIndex = null; // { chunkObjects, tokenizedChunks, docFreq, N }
 
 /**
- * Build (or rebuild) the in-memory TF-IDF index from an array of chunk strings.
- * Call this on server start and after every document upload.
- * @param {string[]} chunks  All chunk texts across all uploaded documents
+ * Build (or rebuild) the in-memory TF-IDF index.
+ * @param {{ text: string, documentId: string, filename: string }[]} chunkObjects
  */
-function buildTFIDFIndex(chunks) {
-    if (!chunks || chunks.length === 0) {
+function buildTFIDFIndex(chunkObjects) {
+    if (!chunkObjects || chunkObjects.length === 0) {
         tfidfIndex = null;
         return;
     }
 
-    const tokenizedChunks = chunks.map(c =>
-        c.toLowerCase().split(/\W+/).filter(Boolean)
+    const tokenizedChunks = chunkObjects.map(c =>
+        c.text.toLowerCase().split(/\W+/).filter(Boolean)
     );
 
     const docFreq = {};
@@ -25,12 +24,9 @@ function buildTFIDFIndex(chunks) {
         seen.forEach(t => { docFreq[t] = (docFreq[t] || 0) + 1; });
     });
 
-    tfidfIndex = { chunks, tokenizedChunks, docFreq, N: chunks.length };
+    tfidfIndex = { chunkObjects, tokenizedChunks, docFreq, N: chunkObjects.length };
 }
 
-/**
- * Compute the TF-IDF score of a single document for a query.
- */
 function _tfIdfScore(queryTokens, docTokens, docFreq, N) {
     const tf = {};
     docTokens.forEach(t => { tf[t] = (tf[t] || 0) + 1; });
@@ -47,18 +43,18 @@ function _tfIdfScore(queryTokens, docTokens, docFreq, N) {
 
 /**
  * Retrieve the top-k chunks using TF-IDF keyword scoring.
- * @param {string} query
- * @param {number} k
- * @returns {{ chunk: string, score: number }[]}
+ * @returns {{ chunk: string, score: number, documentId: string, filename: string }[]}
  */
 function retrieveTFIDF(query, k = 3) {
-    if (!tfidfIndex || tfidfIndex.chunks.length === 0) return [];
+    if (!tfidfIndex || tfidfIndex.chunkObjects.length === 0) return [];
 
     const queryTokens = query.toLowerCase().split(/\W+/).filter(Boolean);
 
     const scored = tfidfIndex.tokenizedChunks.map((docTokens, i) => ({
-        chunk: tfidfIndex.chunks[i],
-        score: _tfIdfScore(queryTokens, docTokens, tfidfIndex.docFreq, tfidfIndex.N)
+        chunk:      tfidfIndex.chunkObjects[i].text,
+        score:      _tfIdfScore(queryTokens, docTokens, tfidfIndex.docFreq, tfidfIndex.N),
+        documentId: tfidfIndex.chunkObjects[i].documentId,
+        filename:   tfidfIndex.chunkObjects[i].filename
     }));
 
     return scored
@@ -69,17 +65,18 @@ function retrieveTFIDF(query, k = 3) {
 
 /**
  * Retrieve the top-k chunks using cosine similarity on pre-computed embeddings.
- * @param {number[]} queryEmbedding  Embedding vector for the user query
- * @param {{ text: string, embedding: number[] }[]} chunksWithEmbeddings
- * @param {number} k
- * @returns {{ chunk: string, score: number }[]}
+ * @param {number[]} queryEmbedding
+ * @param {{ text: string, embedding: number[], documentId: string, filename: string }[]} chunksWithEmbeddings
+ * @returns {{ chunk: string, score: number, documentId: string, filename: string }[]}
  */
 function retrieveSemantic(queryEmbedding, chunksWithEmbeddings, k = 3) {
     if (!chunksWithEmbeddings || chunksWithEmbeddings.length === 0) return [];
 
     const scored = chunksWithEmbeddings.map(item => ({
-        chunk: item.text,
-        score: cosineSimilarity(queryEmbedding, item.embedding)
+        chunk:      item.text,
+        score:      cosineSimilarity(queryEmbedding, item.embedding),
+        documentId: item.documentId,
+        filename:   item.filename
     }));
 
     return scored

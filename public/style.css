@@ -1,4 +1,4 @@
-body{
+body {
     display: flex;
     gap: 15px;
     padding: 15px;
@@ -9,11 +9,36 @@ body{
     margin: 0;
 }
 
-/* ── Evidence panel ─────────────────────────────────────────────── */
-#evidence-panel {
-    flex: 1;
-    height: calc(100vh - 30px);
-    overflow-y: auto;
+/* ── Shared section base ─────────────────────────────────────────────────── */
+section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+hr {
+    border: 1px solid rgb(37, 122, 201);
+    width: 100%;
+    margin: 2px 0 5px 0;
+}
+
+h1 { margin: 0 0 2px 0; }
+
+h2 {
+    margin: 0 0 8px 0;
+    font-size: 1rem;
+    color: #333;
+}
+
+.card {
+    background-color: rgb(240, 242, 245);
+    border-radius: 5px;
+    padding: 10px;
+    border: 1px solid rgb(220, 220, 220);
 }
 
 .no-data {
@@ -28,69 +53,29 @@ body{
     min-height: 1.2em;
 }
 
-/* Confidence display */
-.confidence-score {
-    font-size: 1.6rem;
-    font-weight: 700;
-    line-height: 1.2;
+/* ── Left panel: Document Management ────────────────────────────────────── */
+#doc-panel {
+    flex: 1;
+    height: fit-content;
 }
 
-.conf-label {
-    font-size: 1rem;
-    font-weight: 400;
-}
-
-.conf-detail {
-    font-size: 0.82rem;
-    color: #555;
-    margin-top: 4px;
-}
-
-/* Evidence cards */
-#evidence-section {
-    border-radius: 5px;
-    padding: 10px;
+#upload-form {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
 }
 
-#evidence-section h2 {
-    margin-bottom: 6px;
-}
-
-.evidence-card {
-    background: rgb(240, 242, 245);
-    border: 1px solid rgb(210, 215, 225);
+#uploaded-docs {
     border-radius: 5px;
-    padding: 8px 10px;
-    font-size: 0.82rem;
+    padding: 10px;
 }
 
-.evidence-header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 4px;
-}
-
-.evidence-num {
-    font-weight: 700;
-    color: rgb(37, 122, 201);
-}
-
-.evidence-score {
-    color: #555;
-    font-size: 0.8rem;
-}
-
-.evidence-text {
+#uploaded-docs p {
+    color: #888;
+    font-size: 0.9rem;
     margin: 0;
-    color: #333;
-    line-height: 1.4;
-    word-break: break-word;
 }
 
-/* Doc list */
 #doc-list {
     list-style: none;
     padding: 0;
@@ -114,52 +99,13 @@ body{
     font-size: 0.88rem;
 }
 
-/* Chat message styles */
-.msg-user {
-    text-align: right;
-    color: rgb(37, 122, 201);
-    margin: 0;
-}
-
-.msg-bot {
-    text-align: left;
-    margin: 0;
-}
-
-.msg-system {
-    text-align: center;
-    color: gray;
-    font-size: 0.85rem;
-    margin: 0;
-}
-
-section{
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 15px;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-#doc-panel{
-    flex: 1;
-    height: fit-content;
-}
-
-#upload-form{
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-#chat-container{
+/* ── Middle panel: Chat ──────────────────────────────────────────────────── */
+#chat-container {
     flex: 2;
     height: calc(100vh - 30px);
 }
 
-#messages{
+#messages {
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -172,47 +118,167 @@ section{
     background-color: rgb(248, 248, 248);
 }
 
-#input-area{
+#input-area {
     display: flex;
     gap: 8px;
     align-items: flex-end;
 }
 
-hr{
-    border: 1px solid rgb(37, 122, 201);
-    width: 100%;
-    margin: 2px 0 5px 0;
-}
-
-h1{
-    margin: 0 0 2px 0;
-}
-
-h2{
-    margin: 0 0 8px 0;
-    font-size: 1rem;
-    color: #333;
-}
-
-.card{
-    background-color: rgb(240, 242, 245);
-    border-radius: 5px;
-    padding: 10px;
-    border: 1px solid rgb(220, 220, 220);
-}
-
-#uploaded-docs{
-    border-radius: 5px;
-    padding: 10px;
-}
-
-#uploaded-docs p{
-    color: #888;
-    font-size: 0.9rem;
+.msg-user {
+    text-align: right;
+    color: rgb(37, 122, 201);
     margin: 0;
 }
 
-select{
+.msg-bot {
+    text-align: left;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.msg-system {
+    text-align: center;
+    color: gray;
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+/* ── Citation chips (inline in bot messages) ─────────────────────────────── */
+.citation-chip {
+    display: inline-block;
+    background: rgb(37, 122, 201);
+    color: white;
+    border-radius: 10px;
+    padding: 1px 8px;
+    font-size: 0.74rem;
+    cursor: pointer;
+    margin: 0 2px;
+    font-weight: 500;
+    vertical-align: middle;
+    transition: background 0.15s;
+    white-space: nowrap;
+}
+
+.citation-chip:hover {
+    background: rgb(28, 100, 170);
+}
+
+.citation-chip-demo {
+    display: inline-block;
+    background: rgb(37, 122, 201);
+    color: white;
+    border-radius: 10px;
+    padding: 1px 8px;
+    font-size: 0.82rem;
+    font-weight: 500;
+}
+
+/* ── Confidence badge (inline under bot message) ─────────────────────────── */
+.confidence-badge {
+    font-size: 0.76rem;
+    color: #555;
+    padding: 2px 8px;
+    background: rgb(240, 242, 245);
+    border-radius: 10px;
+    display: inline-block;
+    margin-top: -4px;
+    border: 1px solid rgb(220, 220, 220);
+}
+
+/* ── Right panel: Interactive Source Viewer ──────────────────────────────── */
+#source-viewer {
+    flex: 1;
+    height: calc(100vh - 30px);
+    overflow: hidden;
+}
+
+#source-placeholder {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+    background: rgb(248, 248, 248);
+    border-radius: 5px;
+    border: 1px dashed rgb(200, 200, 200);
+}
+
+#source-document {
+    display: none;
+    flex-direction: column;
+    flex: 1;
+    gap: 6px;
+    min-height: 0;
+}
+
+#source-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 500;
+    font-size: 0.9rem;
+    padding: 4px 2px;
+    border-bottom: 1px solid rgb(220, 220, 220);
+    flex-shrink: 0;
+}
+
+#source-filename {
+    color: rgb(37, 122, 201);
+    word-break: break-all;
+}
+
+#source-close {
+    cursor: pointer;
+    color: #888;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+#source-close:hover {
+    color: #c00;
+    background: rgb(240, 242, 245);
+}
+
+#source-content {
+    flex: 1;
+    overflow-y: auto;
+    border: 1px solid rgb(220, 220, 220);
+    border-radius: 4px;
+    background: white;
+    padding: 10px 12px;
+    min-height: 0;
+}
+
+#source-content pre {
+    white-space: pre-wrap;
+    word-break: break-word;
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+    font-size: 0.82rem;
+    line-height: 1.7;
+    color: #333;
+}
+
+.citation-highlight {
+    background: rgba(255, 180, 0, 0.35);
+    border-left: 3px solid #e07000;
+    padding-left: 6px;
+    display: inline;
+}
+
+#source-statusbar {
+    font-size: 0.76rem;
+    color: #666;
+    padding: 4px 2px;
+    border-top: 1px solid rgb(230, 230, 230);
+    flex-shrink: 0;
+}
+
+/* ── Form controls ───────────────────────────────────────────────────────── */
+select {
     width: 100%;
     padding: 6px 8px;
     border-radius: 4px;
@@ -222,7 +288,7 @@ select{
     background-color: white;
 }
 
-button{
+button {
     height: 36px;
     padding: 0 14px;
     border-radius: 4px;
@@ -235,11 +301,11 @@ button{
     width: fit-content;
 }
 
-button:hover{
+button:hover {
     background-color: rgb(28, 100, 170);
 }
 
-textarea{
+textarea {
     flex: 1;
     height: 36px;
     padding: 8px;
@@ -251,13 +317,12 @@ textarea{
     font-size: 0.9rem;
 }
 
-
-
-/* ── Study Workflow buttons ─────────────────────────────────────────── */
+/* ── Study Workflow buttons ──────────────────────────────────────────────── */
 .workflow-btn {
     width: 100%;
     text-align: left;
     padding: 12px 16px;
     font-size: 1rem;
     margin: 0;
+    height: auto;
 }

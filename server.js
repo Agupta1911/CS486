@@ -42,10 +42,16 @@ const upload = multer({
 // ─── MongoDB + TF-IDF bootstrap ──────────────────────────────────────────────
 
 async function rebuildTFIDFIndex() {
-    const docs = await Document.find({ processingStatus: 'completed' }, 'chunks.text');
-    const allChunks = docs.flatMap(d => d.chunks.map(c => c.text));
-    retrievalService.buildTFIDFIndex(allChunks);
-    console.log(`TF-IDF index built with ${allChunks.length} chunk(s)`);
+    const docs = await Document.find({ processingStatus: 'completed' }, 'filename chunks.text');
+    const allChunkObjects = docs.flatMap(d =>
+        d.chunks.map(c => ({
+            text:       c.text,
+            documentId: d._id.toString(),
+            filename:   d.filename
+        }))
+    );
+    retrievalService.buildTFIDFIndex(allChunkObjects);
+    console.log(`TF-IDF index built with ${allChunkObjects.length} chunk(s)`);
 }
 
 mongoose.connect(process.env.MONGO_URI)
@@ -154,10 +160,15 @@ app.post('/chat', async (req, res) => {
             // Semantic: embed the query, then compare against stored chunk embeddings
             const docs = await Document.find(
                 { processingStatus: 'completed' },
-                'chunks.text chunks.embedding'
+                'filename chunks.text chunks.embedding'
             );
             const allChunks = docs.flatMap(d =>
-                d.chunks.map(c => ({ text: c.text, embedding: c.embedding }))
+                d.chunks.map(c => ({
+                    text:       c.text,
+                    embedding:  c.embedding,
+                    documentId: d._id.toString(),
+                    filename:   d.filename
+                }))
             );
 
             if (allChunks.length > 0) {
@@ -181,11 +192,11 @@ app.post('/chat', async (req, res) => {
         const messages = [];
         if (retrievedEvidence.length > 0) {
             const contextText = retrievedEvidence
-                .map((e, i) => `[${i + 1}] ${e.chunk}`)
+                .map((e, i) => `[${i + 1}] Document: ${e.filename || 'Unknown'}\n${e.chunk}`)
                 .join('\n\n');
             messages.push({
                 role:    'system',
-                content: `You are a helpful assistant. Use the following retrieved context to answer the user's question where relevant. If the context does not apply, answer from general knowledge.\n\nContext:\n${contextText}`
+                content: `You are a helpful financial analysis assistant. Use the following retrieved context to answer the user's question where relevant. After each factual claim supported by the context, add a citation marker [cite:1], [cite:2], or [cite:3] corresponding to which source passage you used. If the context does not apply, answer from general knowledge without citation markers.\n\nRetrieved Sources:\n${contextText}`
             });
         } else {
             messages.push({ role: 'system', content: 'You are a helpful assistant.' });
@@ -297,6 +308,18 @@ app.post('/conversationHistory', async (req, res) => {
     } catch (err) {
         console.error('Conversation history fetch error:', err);
         res.status(500).json({ error: 'Failed to fetch conversation history' });
+    }
+});
+
+// GET /document/:id/text — return full original text for source viewer
+app.get('/document/:id/text', async (req, res) => {
+    try {
+        const doc = await Document.findById(req.params.id, 'filename text');
+        if (!doc) return res.status(404).json({ error: 'Document not found' });
+        res.json({ filename: doc.filename, text: doc.text });
+    } catch (err) {
+        console.error('Document text fetch error:', err);
+        res.status(500).json({ error: 'Failed to fetch document text' });
     }
 });
 

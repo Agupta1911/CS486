@@ -1,8 +1,10 @@
 const mongoose = require('mongoose');
 
 const evidenceSchema = new mongoose.Schema({
-    chunk: { type: String },
-    score: { type: Number }
+    chunk:      { type: String },
+    score:      { type: Number },
+    documentId: { type: String },
+    filename:   { type: String }
 }, { _id: false });
 
 const confidenceSchema = new mongoose.Schema({

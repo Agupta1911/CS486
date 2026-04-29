@@ -70,8 +70,6 @@ const uploadBtn         = document.getElementById('upload-btn');
 const fileInput         = document.getElementById('file-input');
 const uploadStatus      = document.getElementById('upload-status');
 const docList           = document.getElementById('doc-list');
-const confidenceDisplay = document.getElementById('confidence-display');
-const evidenceItems     = document.getElementById('evidence-items');
 
 const isChatPage = !!inputField;
 
@@ -139,56 +137,109 @@ if (uploadBtn) uploadBtn.addEventListener('click', () => {
         .finally(() => { uploadBtn.disabled = false; });
 });
 
-// ─── Evidence panel helpers ───────────────────────────────────────────────────
-
-function renderConfidence(metrics) {
-    if (!metrics || metrics.score === undefined) {
-        confidenceDisplay.innerHTML = '<p class="no-data">No confidence data.</p>';
-        return;
-    }
-
-    const pct   = (metrics.score * 100).toFixed(1);
-    const color = metrics.label === 'High'      ? '#1a7a1a' :
-                  metrics.label === 'Medium'    ? '#8a6500' :
-                  metrics.label === 'Low'       ? '#c06000' : '#c00';
-
-    confidenceDisplay.innerHTML = `
-        <div class="confidence-score" style="color:${color}">
-            ${pct}% <span class="conf-label">(${metrics.label})</span>
-        </div>
-        <div class="conf-detail">Top: ${(metrics.topScore * 100).toFixed(1)}% &nbsp;|&nbsp; Avg: ${(metrics.avgScore * 100).toFixed(1)}%</div>
-    `;
-}
-
-function renderEvidence(evidence) {
-    if (!evidence || evidence.length === 0) {
-        evidenceItems.innerHTML = '<p class="no-data">No relevant chunks retrieved.</p>';
-        return;
-    }
-
-    evidenceItems.innerHTML = '';
-    evidence.forEach((item, i) => {
-        const card = document.createElement('div');
-        card.className = 'evidence-card';
-
-        const pct = (Math.min(item.score, 1) * 100).toFixed(1);
-
-        card.innerHTML = `
-            <div class="evidence-header">
-                <span class="evidence-num">#${i + 1}</span>
-                <span class="evidence-score">Score: ${pct}%</span>
-            </div>
-            <p class="evidence-text">${escapeHtml(item.chunk)}</p>
-        `;
-        evidenceItems.appendChild(card);
-    });
-}
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function escapeHtml(str) {
     return str
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;');
+}
+
+// ─── Citation rendering ───────────────────────────────────────────────────────
+
+function renderBotMessage(text, evidence) {
+    const botEl = document.createElement('div');
+    botEl.className = 'msg-bot';
+
+    // Escape text, then replace [cite:N] with clickable chip HTML (brackets survive escaping)
+    let html = escapeHtml(text).replace(/\[cite:(\d+)\]/g, (_, n) => {
+        const idx = parseInt(n) - 1;
+        const ev  = evidence && evidence[idx];
+        if (!ev) return '';
+        const label = ev.filename || `Source ${n}`;
+        return `<span class="citation-chip" data-index="${idx}">[${label}]</span>`;
+    });
+
+    botEl.innerHTML = 'Bot: ' + html;
+
+    botEl.querySelectorAll('.citation-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+            const idx = parseInt(chip.dataset.index);
+            if (evidence && evidence[idx] && evidence[idx].documentId) {
+                openSourceViewer(evidence[idx]);
+                logEvent('click', 'citation-chip');
+            }
+        });
+    });
+
+    return botEl;
+}
+
+function renderConfidenceBadge(metrics) {
+    if (!metrics || metrics.score === undefined) return null;
+    const pct   = (metrics.score * 100).toFixed(1);
+    const badge = document.createElement('div');
+    badge.className = 'confidence-badge';
+    badge.textContent = `Confidence: ${pct}% (${metrics.label})`;
+    return badge;
+}
+
+// ─── Interactive Source Viewer ────────────────────────────────────────────────
+
+function openSourceViewer(evidenceItem) {
+    fetch(`/document/${evidenceItem.documentId}/text`)
+        .then(r => r.json())
+        .then(data => showSourceDocument(data.filename, data.text, evidenceItem.chunk))
+        .catch(err => console.error('Source viewer error:', err));
+}
+
+function showSourceDocument(filename, fullText, chunkText) {
+    const placeholder = document.getElementById('source-placeholder');
+    const sourceDoc   = document.getElementById('source-document');
+
+    placeholder.style.display = 'none';
+    sourceDoc.style.display   = 'flex';
+
+    document.getElementById('source-filename').textContent = filename;
+
+    const content = document.getElementById('source-content');
+
+    // Find chunk position in the full text for highlighting
+    let start = fullText.indexOf(chunkText);
+    let end   = start === -1 ? -1 : start + chunkText.length;
+
+    // Fallback: match on the first 80 chars of the chunk
+    if (start === -1) {
+        const prefix = chunkText.substring(0, 80).trim();
+        start = fullText.indexOf(prefix);
+        end   = start === -1 ? -1 : Math.min(fullText.length, start + chunkText.length);
+    }
+
+    if (start === -1) {
+        content.innerHTML = `<pre>${escapeHtml(fullText)}</pre>`;
+    } else {
+        const before      = escapeHtml(fullText.substring(0, start));
+        const highlighted = escapeHtml(fullText.substring(start, end));
+        const after       = escapeHtml(fullText.substring(end));
+        content.innerHTML = `<pre>${before}<span class="citation-highlight">${highlighted}</span>${after}</pre>`;
+    }
+
+    const mark = content.querySelector('.citation-highlight');
+    if (mark) mark.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    document.getElementById('source-statusbar').textContent =
+        start === -1
+            ? 'Document loaded · passage position not found'
+            : '1 passage highlighted · Click ✕ to close';
+}
+
+const sourceCloseBtn = document.getElementById('source-close');
+if (sourceCloseBtn) {
+    sourceCloseBtn.addEventListener('click', () => {
+        document.getElementById('source-document').style.display   = 'none';
+        document.getElementById('source-placeholder').style.display = 'flex';
+    });
 }
 
 // ─── Conversation history (in-memory, for multi-turn context) ────────────────
@@ -232,17 +283,16 @@ function sendMessage() {
                 return;
             }
 
-            conversationHistory.push({ role: 'user', content: text });
+            conversationHistory.push({ role: 'user',      content: text       });
             conversationHistory.push({ role: 'assistant', content: data.reply });
 
-            const botEl = document.createElement('p');
-            botEl.className = 'msg-bot';
-            botEl.textContent = 'Bot: "' + data.reply + '"';
+            const botEl = renderBotMessage(data.reply, data.retrievedEvidence);
             messagesContainer.appendChild(botEl);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
-            renderConfidence(data.confidenceMetrics);
-            renderEvidence(data.retrievedEvidence);
+            const badge = renderConfidenceBadge(data.confidenceMetrics);
+            if (badge) messagesContainer.appendChild(badge);
+
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
         })
         .catch(err => console.error('Error:', err));
 }
@@ -290,9 +340,9 @@ window.onload = function () {
                 userMsg.textContent = 'You: ' + interaction.userInput;
                 messagesContainer.appendChild(userMsg);
 
-                const botMsg = document.createElement('p');
+                const botMsg = document.createElement('div');
                 botMsg.className = 'msg-bot';
-                botMsg.textContent = 'Bot: "' + interaction.botResponse + '"';
+                botMsg.textContent = 'Bot: ' + interaction.botResponse;
                 messagesContainer.appendChild(botMsg);
             });
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
