@@ -172,6 +172,10 @@ function escapeHtml(str) {
         .replace(/>/g, '&gt;');
 }
 
+// ─── Conversation history (in-memory, for multi-turn context) ────────────────
+
+const conversationHistory = [];
+
 // ─── Chat ─────────────────────────────────────────────────────────────────────
 
 function sendMessage() {
@@ -189,22 +193,35 @@ function sendMessage() {
     inputField.value = '';
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
-    const retrievalMethod = retrievalDropdown.value;
+    const retrievalMethod = retrievalDropdown ? retrievalDropdown.value : 'semantic';
 
     fetch('/chat', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ message: text, retrievalMethod, participantID })
+        body:    JSON.stringify({
+            input: text,
+            history: conversationHistory,
+            participantID,
+            systemID,
+            retrievalMethod
+        })
     })
         .then(r => r.json())
         .then(data => {
+            if (data.error) {
+                console.error('Chat error:', data.error);
+                return;
+            }
+
+            conversationHistory.push({ role: 'user', content: text });
+            conversationHistory.push({ role: 'assistant', content: data.reply });
+
             const botEl = document.createElement('p');
             botEl.className = 'msg-bot';
             botEl.textContent = 'Bot: "' + data.reply + '"';
             messagesContainer.appendChild(botEl);
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
-            // Update evidence panel
             renderConfidence(data.confidenceMetrics);
             renderEvidence(data.retrievedEvidence);
         })
@@ -240,8 +257,13 @@ window.onload = function () {
     })
         .then(r => r.json())
         .then(data => {
-            if (!data || data.length === 0) return;
-            data.forEach(interaction => {
+            const interactions = data.interactions || [];
+            if (interactions.length === 0) return;
+
+            interactions.forEach(interaction => {
+                conversationHistory.push({ role: 'user',      content: interaction.userInput  });
+                conversationHistory.push({ role: 'assistant', content: interaction.botResponse });
+
                 const userMsg = document.createElement('p');
                 userMsg.className = 'msg-user';
                 userMsg.textContent = 'You: ' + interaction.userInput;
@@ -266,6 +288,7 @@ function logEvent(eventType, elementName) {
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({
             participantID,
+            systemID,
             eventType,
             elementName,
             timestamp: new Date().toISOString()
