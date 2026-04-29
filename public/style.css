@@ -173,6 +173,25 @@ h2 {
     font-weight: 500;
 }
 
+/* ── Sources row (always shown below bot message) ───────────────────────── */
+.msg-bot-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.sources-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+}
+
+.sources-label {
+    font-size: 0.75rem;
+    color: #888;
+}
+
 /* ── Confidence badge (inline under bot message) ─────────────────────────── */
 .confidence-badge {
     font-size: 0.76rem;

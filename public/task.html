@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <title>Study Task</title>
+</head>
+<body>
+    <section id="home-panel" style="flex: 1; max-width: 700px; margin: 50px auto;">
+        <h1>Study Task</h1>
+        <hr>
+        <div class="card" style="margin-top: 10px; padding: 20px;">
+            <p style="margin: 0 0 16px 0;">
+                You will use the AI chatbot to complete the following financial analysis tasks.
+                Upload the relevant documents first, then ask the chatbot your questions.
+                <strong>Read all three tasks before starting.</strong>
+            </p>
+
+            <div class="task-block">
+                <h2>Task 1 — NVDA Overnight Jump</h2>
+                <p>
+                    You are a trader. NVDA's stock jumped <strong>10% overnight</strong>.
+                    Using the AI system, determine why this happened and whether the move is
+                    sustainable. You have access to the latest quarterly earnings report and
+                    recent news headlines.
+                </p>
+                <p class="task-hint">Try asking: <em>"Why did NVDA jump 10% overnight? Summarize the revenue growth and EPS, and check the news headlines to see if the move is sustainable."</em></p>
+            </div>
+
+            <div class="task-block">
+                <h2>Task 2 — EV Sector Comparison</h2>
+                <p>
+                    You are a financial analyst researching the EV sector. Using the AI system,
+                    compare the recent <strong>volume trends and price volatility</strong> of
+                    TSLA, RIVN, and LCID. You have historical data sheets and news transcripts
+                    highlighting shared risks.
+                </p>
+                <p class="task-hint">Try asking: <em>"Compare the volume trends and price volatility of TSLA, RIVN, and LCID based on the uploaded data."</em></p>
+            </div>
+
+            <div class="task-block">
+                <h2>Task 3 — TSLA Price Dip Analysis</h2>
+                <p>
+                    You are a daily trader. TSLA's price dipped recently. Using the AI system,
+                    determine whether this dip correlates with <strong>specific negative press</strong>
+                    or was a technical correction. You have the last 7 days of price history and
+                    major news articles from that period.
+                </p>
+                <p class="task-hint">Try asking: <em>"Did the price drop on Day 4 and Day 5 of TSLA in the 7-day history correlate with specific negative press? Match the prices to the news on those days."</em></p>
+            </div>
+
+            <div style="margin-top: 20px; text-align: center;">
+                <button id="back-btn" type="button">← Back to Workflow</button>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        const params      = new URLSearchParams(window.location.search);
+        const participantID = params.get('participantID') || localStorage.getItem('participantID');
+        const systemID      = params.get('systemID')      || localStorage.getItem('systemID');
+
+        document.getElementById('back-btn').addEventListener('click', () => {
+            window.location.href = `/study-workflow.html?participantID=${encodeURIComponent(participantID)}&systemID=${encodeURIComponent(systemID)}`;
+        });
+    </script>
+
+    <style>
+        .task-block {
+            background: white;
+            border: 1px solid rgb(220, 220, 220);
+            border-radius: 6px;
+            padding: 14px 16px;
+            margin-bottom: 14px;
+        }
+        .task-block h2 {
+            color: rgb(37, 122, 201);
+            margin-bottom: 8px;
+        }
+        .task-block p {
+            margin: 0 0 8px 0;
+            line-height: 1.5;
+        }
+        .task-hint {
+            color: #555;
+            font-size: 0.88rem;
+            background: rgb(240, 242, 245);
+            border-left: 3px solid rgb(37, 122, 201);
+            padding: 6px 10px;
+            border-radius: 0 4px 4px 0;
+        }
+        .task-hint em {
+            color: #333;
+        }
+    </style>
+</body>
+</html>

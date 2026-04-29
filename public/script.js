@@ -56,7 +56,7 @@ if (document.getElementById('prototype-btn')) {
 
 if (document.getElementById('task-btn')) {
     document.getElementById('task-btn').addEventListener('click', () => {
-        alert('Add your task instructions here or link this button to a task page.');
+        window.location.href = `/task.html?participantID=${encodeURIComponent(participantID)}&systemID=${encodeURIComponent(systemID)}`;
     });
 }
 
@@ -149,10 +149,13 @@ function escapeHtml(str) {
 // ─── Citation rendering ───────────────────────────────────────────────────────
 
 function renderBotMessage(text, evidence) {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'msg-bot-group';
+
     const botEl = document.createElement('div');
     botEl.className = 'msg-bot';
 
-    // Escape text, then replace [cite:N] with clickable chip HTML (brackets survive escaping)
+    // Replace any [cite:N] the model included with inline chips
     let html = escapeHtml(text).replace(/\[cite:(\d+)\]/g, (_, n) => {
         const idx = parseInt(n) - 1;
         const ev  = evidence && evidence[idx];
@@ -164,16 +167,41 @@ function renderBotMessage(text, evidence) {
     botEl.innerHTML = 'Bot: ' + html;
 
     botEl.querySelectorAll('.citation-chip').forEach(chip => {
-        chip.addEventListener('click', () => {
+        chip.addEventListener('click', e => {
+            e.stopPropagation();
             const idx = parseInt(chip.dataset.index);
-            if (evidence && evidence[idx] && evidence[idx].documentId) {
+            if (evidence && evidence[idx]) {
                 openSourceViewer(evidence[idx]);
                 logEvent('click', 'citation-chip');
             }
         });
     });
 
-    return botEl;
+    wrapper.appendChild(botEl);
+
+    // Always render a Sources row so chips are clickable even if model skipped [cite:N]
+    if (evidence && evidence.length > 0 && evidence.some(ev => ev.filename)) {
+        const row = document.createElement('div');
+        row.className = 'sources-row';
+        row.innerHTML = '<span class="sources-label">Sources:</span>';
+
+        evidence.forEach(ev => {
+            if (!ev.filename) return;
+            const chip = document.createElement('span');
+            chip.className = 'citation-chip';
+            chip.textContent = ev.filename;
+            chip.addEventListener('click', e => {
+                e.stopPropagation();
+                openSourceViewer(ev);
+                logEvent('click', 'citation-chip');
+            });
+            row.appendChild(chip);
+        });
+
+        wrapper.appendChild(row);
+    }
+
+    return wrapper;
 }
 
 function renderConfidenceBadge(metrics) {
@@ -188,10 +216,18 @@ function renderConfidenceBadge(metrics) {
 // ─── Interactive Source Viewer ────────────────────────────────────────────────
 
 function openSourceViewer(evidenceItem) {
+    if (!evidenceItem.documentId) {
+        // No full document available — show just the chunk in the viewer
+        showSourceDocument(evidenceItem.filename || 'Retrieved Chunk', evidenceItem.chunk, evidenceItem.chunk);
+        return;
+    }
     fetch(`/document/${evidenceItem.documentId}/text`)
         .then(r => r.json())
         .then(data => showSourceDocument(data.filename, data.text, evidenceItem.chunk))
-        .catch(err => console.error('Source viewer error:', err));
+        .catch(() => {
+            // Fetch failed — still show the chunk so the viewer is useful
+            showSourceDocument(evidenceItem.filename || 'Retrieved Chunk', evidenceItem.chunk, evidenceItem.chunk);
+        });
 }
 
 function showSourceDocument(filename, fullText, chunkText) {
