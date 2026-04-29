@@ -31,8 +31,7 @@
             const partId = document.getElementById('participant-id').value.trim();
             if (partId) {
                 localStorage.setItem('participantID', partId);
-                // Randomly assign participant to system A or B
-                const systemID = Math.random() < 0.5 ? 'A' : 'B';
+                const systemID = parseInt(partId) % 2 === 1 ? 1 : 2;
                 localStorage.setItem('systemID', systemID);
                 window.location.href = `/study-workflow.html?participantID=${encodeURIComponent(partId)}&systemID=${encodeURIComponent(systemID)}`;
             } else {

@@ -8,18 +8,22 @@ if (!participantID && (window.location.pathname.includes('chat.html') || window.
     window.location.href = 'index.html';
 }
 
-// ─── Element references (chat page only) ─────────────────────────────────────
+// ─── Event logging (defined early — used by workflow + chat pages) ────────────
 
-const inputField        = document.getElementById('user-input');
-const sendBtn           = document.getElementById('send-btn');
-const messagesContainer = document.getElementById('messages');
-const retrievalDropdown = document.getElementById('retrieval-method');
-const uploadBtn         = document.getElementById('upload-btn');
-const fileInput         = document.getElementById('file-input');
-const uploadStatus      = document.getElementById('upload-status');
-const docList           = document.getElementById('doc-list');
-const confidenceDisplay = document.getElementById('confidence-display');
-const evidenceItems     = document.getElementById('evidence-items');
+function logEvent(eventType, elementName) {
+    if (!participantID) return;
+    fetch('/log-event', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({
+            participantID,
+            systemID,
+            eventType,
+            elementName,
+            timestamp: new Date().toISOString()
+        })
+    }).catch(err => console.error('Error logging event:', err));
+}
 
 // ─── Study Workflow page ──────────────────────────────────────────────────────
 
@@ -55,6 +59,21 @@ if (document.getElementById('task-btn')) {
         alert('Add your task instructions here or link this button to a task page.');
     });
 }
+
+// ─── Element references (chat page only) ─────────────────────────────────────
+
+const inputField        = document.getElementById('user-input');
+const sendBtn           = document.getElementById('send-btn');
+const messagesContainer = document.getElementById('messages');
+const retrievalDropdown = document.getElementById('retrieval-method');
+const uploadBtn         = document.getElementById('upload-btn');
+const fileInput         = document.getElementById('file-input');
+const uploadStatus      = document.getElementById('upload-status');
+const docList           = document.getElementById('doc-list');
+const confidenceDisplay = document.getElementById('confidence-display');
+const evidenceItems     = document.getElementById('evidence-items');
+
+const isChatPage = !!inputField;
 
 // ─── Document list ────────────────────────────────────────────────────────────
 
@@ -228,25 +247,27 @@ function sendMessage() {
         .catch(err => console.error('Error:', err));
 }
 
-if (sendBtn) sendBtn.addEventListener('click', sendMessage);
+if (isChatPage) {
+    sendBtn.addEventListener('click', sendMessage);
 
-if (inputField) inputField.addEventListener('keypress', e => {
-    if (e.key === 'Enter') { e.preventDefault(); sendMessage(); }
-});
+    inputField.addEventListener('keypress', e => {
+        if (e.key === 'Enter') { e.preventDefault(); sendMessage(); }
+    });
 
-if (retrievalDropdown) retrievalDropdown.addEventListener('change', e => {
-    const msg = document.createElement('p');
-    msg.className = 'msg-system';
-    msg.textContent = 'System: Retrieval method changed to ' + e.target.value;
-    messagesContainer.appendChild(msg);
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    logEvent('change', 'retrieval-method');
-});
+    retrievalDropdown.addEventListener('change', e => {
+        const msg = document.createElement('p');
+        msg.className = 'msg-system';
+        msg.textContent = 'System: Retrieval method changed to ' + e.target.value;
+        messagesContainer.appendChild(msg);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        logEvent('change', 'retrieval-method');
+    });
+}
 
 // ─── Load history on page load (chat page only) ───────────────────────────────
 
 window.onload = function () {
-    if (!participantID || !messagesContainer) return;
+    if (!participantID || !isChatPage) return;
 
     loadDocuments();
 
@@ -279,22 +300,7 @@ window.onload = function () {
         .catch(err => console.error('Error loading history:', err));
 };
 
-// ─── Event logging ────────────────────────────────────────────────────────────
-
-function logEvent(eventType, elementName) {
-    if (!participantID) return;
-    fetch('/log-event', {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({
-            participantID,
-            systemID,
-            eventType,
-            elementName,
-            timestamp: new Date().toISOString()
-        })
-    }).catch(err => console.error('Error logging event:', err));
-}
+// ─── Global event listeners ───────────────────────────────────────────────────
 
 document.addEventListener('click', e => {
     const name = e.target.id || e.target.tagName;

@@ -288,16 +288,12 @@ app.post('/conversationHistory', async (req, res) => {
         return res.status(400).json({ error: 'participantID is required' });
     }
 
-    const HISTORY_LIMIT = 5;
-
     try {
-        // Fetch the most recent N interactions, then reverse to chronological order
         const interactions = await Interaction
             .find({ participantID })
             .sort({ timestamp: -1 })
-            .limit(HISTORY_LIMIT);
-        const history = interactions.reverse();
-        res.json(history);
+            .limit(5);
+        res.json({ interactions: interactions.reverse() });
     } catch (err) {
         console.error('Conversation history fetch error:', err);
         res.status(500).json({ error: 'Failed to fetch conversation history' });

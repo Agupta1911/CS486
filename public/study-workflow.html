@@ -1,41 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-  <title>Study Workflow</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <title>Study Workflow</title>
 </head>
 <body>
-  <section id="home-panel" style="flex: 1; text-align: center; max-width: 600px; margin: 50px auto;">
-    <h1>Study Workflow</h1>
-    <hr>
-    <div class="card" style="margin-top: 20px; padding: 20px;">
-      <p>Please complete the following steps in order.</p>
+    <section id="home-panel" style="flex: 1; text-align: center; max-width: 600px; margin: 50px auto;">
+        <h1>Study Workflow</h1>
+        <hr>
+        <div class="card" style="margin-top: 20px; padding: 20px;">
+            <p>Please complete the following steps in order.</p>
+            <ol id="workflow-list" style="text-align: left; padding-left: 20px;">
+                <li style="margin: 12px 0;">
+                    <button id="survey-btn" class="workflow-btn" type="button">
+                        1. Complete the demographics questionnaire.
+                    </button>
+                </li>
+                <li style="margin: 12px 0;">
+                    <button id="task-btn" class="workflow-btn" type="button">
+                        2. Read the task.
+                    </button>
+                </li>
+                <li style="margin: 12px 0;">
+                    <button id="prototype-btn" class="workflow-btn" type="button">
+                        3. Use the AI system to complete the task.
+                    </button>
+                </li>
+            </ol>
+        </div>
+    </section>
 
-      <ol id="workflow-list" style="text-align: left; padding-left: 20px;">
-        <li style="margin: 12px 0;">
-          <button id="survey-btn" class="workflow-btn">
-            Complete the demographics questionnaire.
-          </button>
-        </li>
-        <li style="margin: 12px 0;">
-          <button id="task-btn" class="workflow-btn" type="button">
-            Read the task.
-          </button>
-        </li>
-        <li style="margin: 12px 0;">
-          <button id="prototype-btn" class="workflow-btn" type="button">
-            Use the AI system to complete the task.
-          </button>
-        </li>
-      </ol>
-    </div>
-  </section>
-
-  <script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
