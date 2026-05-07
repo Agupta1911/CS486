@@ -59,6 +59,20 @@ if (document.getElementById('posttask-btn')) {
         () => redirectToSurvey('/redirect-to-posttask', 'Post-Task Survey'));
 }
 
+if (document.getElementById('pretask-btn')) {
+    document.getElementById('pretask-btn').addEventListener('click', () => {
+        logEvent('click', 'pretask-btn');
+        window.location.href = `https://usfca.qualtrics.com/jfe/form/SV_6Dql2M1gfLix4TY?participantID=${encodeURIComponent(participantID)}&systemID=${encodeURIComponent(systemID)}`;
+    });
+}
+
+if (document.getElementById('posttask-btn')) {
+    document.getElementById('posttask-btn').addEventListener('click', () => {
+        logEvent('click', 'posttask-btn');
+        window.location.href = `https://usfca.qualtrics.com/jfe/form/SV_eLIdZEoB1pvjaiq?participantID=${encodeURIComponent(participantID)}&systemID=${encodeURIComponent(systemID)}`;
+    });
+}
+
 if (document.getElementById('prototype-btn')) {
     document.getElementById('prototype-btn').addEventListener('click', () => {
         window.location.href = `/chat.html?participantID=${encodeURIComponent(participantID)}&systemID=${encodeURIComponent(systemID)}`;
