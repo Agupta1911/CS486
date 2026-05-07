@@ -192,16 +192,23 @@ app.post('/chat', async (req, res) => {
         const enhanced = String(systemID) === '2';
         const messages = [];
         if (retrievedEvidence.length > 0) {
-            const contextText = retrievedEvidence
-                .map((e, i) => `[${i + 1}] Document: ${e.filename || 'Unknown'}\n${e.chunk}`)
-                .join('\n\n');
-            const citationInstruction = enhanced
-                ? ' After each factual claim supported by the context, add a citation marker [cite:1], [cite:2], or [cite:3] corresponding to which source passage you used.'
-                : '';
-            messages.push({
-                role:    'system',
-                content: `You are a helpful financial analysis assistant. Use the following retrieved context to answer the user's question where relevant.${citationInstruction} If the context does not apply, answer from general knowledge.\n\nRetrieved Sources:\n${contextText}`
-            });
+            if (enhanced) {
+                const contextText = retrievedEvidence
+                    .map((e, i) => `[${i + 1}] Document: ${e.filename || 'Unknown'}\n${e.chunk}`)
+                    .join('\n\n');
+                messages.push({
+                    role:    'system',
+                    content: `You are a helpful financial analysis assistant. Use the following retrieved context to answer the user's question where relevant. After each factual claim supported by the context, add a citation marker [cite:1], [cite:2], or [cite:3] corresponding to which source passage you used. If the context does not apply, answer from general knowledge without citation markers.\n\nRetrieved Sources:\n${contextText}`
+                });
+            } else {
+                const contextText = retrievedEvidence
+                    .map(e => `--- Source: ${e.filename || 'Unknown'} ---\n${e.chunk}`)
+                    .join('\n\n');
+                messages.push({
+                    role:    'system',
+                    content: `You are a helpful financial analysis assistant. Use the following retrieved context to answer the user's question where relevant. If the context does not apply, answer from general knowledge. Do NOT include any citation markers, bracketed numbers (such as [1] or [2]), or footnote-style references in your response. Write in plain prose only.\n\nRetrieved Context:\n${contextText}`
+                });
+            }
         } else {
             messages.push({ role: 'system', content: 'You are a helpful financial analysis assistant.' });
         }

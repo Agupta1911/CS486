@@ -98,9 +98,12 @@ if (document.getElementById('finish-btn')) {
     });
 }
 
-// ─── Hide source viewer in baseline (systemID == 1) ─────────────────────────
+// ─── Right-panel toggle: baseline gets evidence panel, enhanced gets source viewer ──
 
-if (String(systemID) !== '2') {
+if (String(systemID) === '2') {
+    const ep = document.getElementById('evidence-panel');
+    if (ep) ep.style.display = 'none';
+} else {
     const sv = document.getElementById('source-viewer');
     if (sv) sv.style.display = 'none';
 }
@@ -211,8 +214,12 @@ function renderBotMessage(text, evidence) {
     const enhanced = String(systemID) === '2';
 
     if (!enhanced) {
-        // Baseline: strip any [cite:N] the model leaked in, no chips, no sources row
-        botEl.textContent = 'Bot: ' + text.replace(/\s*\[cite:\d+\]/g, '');
+        // Baseline: strip [cite:N] markers AND bare bracketed-number citations the model
+        // tends to leak (e.g. [1], [2]) when retrieved sources are formatted with labels.
+        const cleaned = text
+            .replace(/\s*\[cite:\d+\]/g, '')
+            .replace(/\s*\[\d+\]/g, '');
+        botEl.textContent = 'Bot: ' + cleaned;
         wrapper.appendChild(botEl);
         return wrapper;
     }
@@ -273,6 +280,54 @@ function renderConfidenceBadge(metrics) {
     badge.className = 'confidence-badge';
     badge.textContent = `Confidence: ${pct}% (${metrics.label})`;
     return badge;
+}
+
+// ─── Baseline (systemID = 1) right-panel rendering ────────────────────────────
+
+function renderBaselineConfidence(metrics) {
+    const el = document.getElementById('confidence-display');
+    if (!el) return;
+    if (!metrics || metrics.score === undefined) {
+        el.innerHTML = '<p class="no-data">No confidence data.</p>';
+        return;
+    }
+    const pct   = (metrics.score * 100).toFixed(1);
+    const color = metrics.label === 'High'   ? '#1a7a1a' :
+                  metrics.label === 'Medium' ? '#8a6500' :
+                  metrics.label === 'Low'    ? '#c06000' : '#c00';
+    el.innerHTML = `
+        <div class="confidence-score" style="color:${color}; font-size: 1.6em; font-weight: 600;">
+            ${pct}% <span style="font-size: 0.6em; font-weight: 400;">(${metrics.label})</span>
+        </div>
+        <div style="font-size: 0.85em; color: #555; margin-top: 4px;">
+            Top: ${(metrics.topScore * 100).toFixed(1)}% &nbsp;|&nbsp; Avg: ${(metrics.avgScore * 100).toFixed(1)}%
+        </div>
+    `;
+}
+
+function renderBaselineEvidence(evidence) {
+    const el = document.getElementById('evidence-items');
+    if (!el) return;
+    if (!evidence || evidence.length === 0) {
+        el.innerHTML = '<p class="no-data">No relevant chunks retrieved.</p>';
+        return;
+    }
+    el.innerHTML = '';
+    evidence.forEach((item, i) => {
+        const card = document.createElement('div');
+        card.className = 'evidence-card';
+        card.style.cssText = 'background:#fff;border:1px solid #e0e0e0;border-radius:4px;padding:10px;margin-bottom:8px;';
+        const pct  = (Math.min(item.score, 1) * 100).toFixed(1);
+        const safe = (item.chunk || '')
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        card.innerHTML = `
+            <div style="font-size:0.8em;color:#555;margin-bottom:4px;">
+                <strong>#${i + 1}</strong> &nbsp;&middot;&nbsp; Score: ${pct}% &nbsp;&middot;&nbsp; ${item.filename || 'Unknown'}
+            </div>
+            <p style="margin:0;font-size:0.88em;line-height:1.4;">${safe}</p>
+        `;
+        el.appendChild(card);
+    });
 }
 
 // ─── Interactive Source Viewer ────────────────────────────────────────────────
@@ -395,6 +450,12 @@ function sendMessage() {
 
             const badge = renderConfidenceBadge(data.confidenceMetrics);
             if (badge) messagesContainer.appendChild(badge);
+
+            // Baseline: also populate the right-side Evidence & Confidence panel
+            if (String(systemID) !== '2') {
+                renderBaselineConfidence(data.confidenceMetrics);
+                renderBaselineEvidence(data.retrievedEvidence);
+            }
 
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
         })
