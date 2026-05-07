@@ -189,17 +189,21 @@ app.post('/chat', async (req, res) => {
             : [];
 
         // ── Build RAG prompt ──────────────────────────────────────────────────
+        const enhanced = String(systemID) === '2';
         const messages = [];
         if (retrievedEvidence.length > 0) {
             const contextText = retrievedEvidence
                 .map((e, i) => `[${i + 1}] Document: ${e.filename || 'Unknown'}\n${e.chunk}`)
                 .join('\n\n');
+            const citationInstruction = enhanced
+                ? ' After each factual claim supported by the context, add a citation marker [cite:1], [cite:2], or [cite:3] corresponding to which source passage you used.'
+                : '';
             messages.push({
                 role:    'system',
-                content: `You are a helpful financial analysis assistant. Use the following retrieved context to answer the user's question where relevant. After each factual claim supported by the context, add a citation marker [cite:1], [cite:2], or [cite:3] corresponding to which source passage you used. If the context does not apply, answer from general knowledge without citation markers.\n\nRetrieved Sources:\n${contextText}`
+                content: `You are a helpful financial analysis assistant. Use the following retrieved context to answer the user's question where relevant.${citationInstruction} If the context does not apply, answer from general knowledge.\n\nRetrieved Sources:\n${contextText}`
             });
         } else {
-            messages.push({ role: 'system', content: 'You are a helpful assistant.' });
+            messages.push({ role: 'system', content: 'You are a helpful financial analysis assistant.' });
         }
 
         // ── Inject prior conversation turns then current user message ─────────
@@ -234,11 +238,33 @@ app.post('/chat', async (req, res) => {
     }
 });
 
-// POST /redirect-to-survey — build Qualtrics URL with participantID embedded
+// POST /redirect-to-survey — demographics survey
 app.post('/redirect-to-survey', (req, res) => {
     const { participantID } = req.body;
 
     const qualtricsBaseUrl = 'https://usfca.qualtrics.com/jfe/form/SV_7VREZRzBnA9Jv94';
+    const surveyUrl = `${qualtricsBaseUrl}?participantID=${encodeURIComponent(participantID)}`;
+
+    res.send(surveyUrl);
+});
+
+// POST /redirect-to-pretask — pre-task questionnaire (prior knowledge / expected difficulty)
+app.post('/redirect-to-pretask', (req, res) => {
+    const { participantID } = req.body;
+
+    // TODO: replace with the real Qualtrics URL once the survey is published
+    const qualtricsBaseUrl = 'https://usfca.qualtrics.com/jfe/form/SV_PRETASK_PLACEHOLDER';
+    const surveyUrl = `${qualtricsBaseUrl}?participantID=${encodeURIComponent(participantID)}`;
+
+    res.send(surveyUrl);
+});
+
+// POST /redirect-to-posttask — post-task questionnaire (NASA-TLX, SUS, trust)
+app.post('/redirect-to-posttask', (req, res) => {
+    const { participantID } = req.body;
+
+    // TODO: replace with the real Qualtrics URL once the survey is published
+    const qualtricsBaseUrl = 'https://usfca.qualtrics.com/jfe/form/SV_POSTTASK_PLACEHOLDER';
     const surveyUrl = `${qualtricsBaseUrl}?participantID=${encodeURIComponent(participantID)}`;
 
     res.send(surveyUrl);

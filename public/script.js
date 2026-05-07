@@ -27,25 +27,36 @@ function logEvent(eventType, elementName) {
 
 // ─── Study Workflow page ──────────────────────────────────────────────────────
 
-function redirectToQualtrics() {
-    fetch('/redirect-to-survey', {
+function redirectToSurvey(route, label) {
+    fetch(route, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ participantID })
     })
         .then(response => response.text())
         .then(url => {
-            logEvent('redirect', 'Qualtrics Survey');
+            logEvent('redirect', label);
             window.location.href = url;
         })
         .catch(error => {
-            console.error('Error redirecting to survey:', error);
+            console.error(`Error redirecting to ${label}:`, error);
             alert('There was an error redirecting to the survey. Please try again.');
         });
 }
 
 if (document.getElementById('survey-btn')) {
-    document.getElementById('survey-btn').addEventListener('click', redirectToQualtrics);
+    document.getElementById('survey-btn').addEventListener('click',
+        () => redirectToSurvey('/redirect-to-survey', 'Demographics Survey'));
+}
+
+if (document.getElementById('pretask-btn')) {
+    document.getElementById('pretask-btn').addEventListener('click',
+        () => redirectToSurvey('/redirect-to-pretask', 'Pre-Task Survey'));
+}
+
+if (document.getElementById('posttask-btn')) {
+    document.getElementById('posttask-btn').addEventListener('click',
+        () => redirectToSurvey('/redirect-to-posttask', 'Post-Task Survey'));
 }
 
 if (document.getElementById('prototype-btn')) {
@@ -58,6 +69,13 @@ if (document.getElementById('task-btn')) {
     document.getElementById('task-btn').addEventListener('click', () => {
         window.location.href = `/task.html?participantID=${encodeURIComponent(participantID)}&systemID=${encodeURIComponent(systemID)}`;
     });
+}
+
+// ─── Hide source viewer in baseline (systemID == 1) ─────────────────────────
+
+if (String(systemID) !== '2') {
+    const sv = document.getElementById('source-viewer');
+    if (sv) sv.style.display = 'none';
 }
 
 // ─── Element references (chat page only) ─────────────────────────────────────
@@ -155,7 +173,16 @@ function renderBotMessage(text, evidence) {
     const botEl = document.createElement('div');
     botEl.className = 'msg-bot';
 
-    // Replace any [cite:N] the model included with inline chips
+    const enhanced = String(systemID) === '2';
+
+    if (!enhanced) {
+        // Baseline: strip any [cite:N] the model leaked in, no chips, no sources row
+        botEl.textContent = 'Bot: ' + text.replace(/\s*\[cite:\d+\]/g, '');
+        wrapper.appendChild(botEl);
+        return wrapper;
+    }
+
+    // Replace [cite:N] markers with inline citation chips
     let html = escapeHtml(text).replace(/\[cite:(\d+)\]/g, (_, n) => {
         const idx = parseInt(n) - 1;
         const ev  = evidence && evidence[idx];
@@ -179,7 +206,7 @@ function renderBotMessage(text, evidence) {
 
     wrapper.appendChild(botEl);
 
-    // Always render a Sources row so chips are clickable even if model skipped [cite:N]
+    // Sources row so chips are clickable even if the model skipped [cite:N]
     if (evidence && evidence.length > 0 && evidence.some(ev => ev.filename)) {
         const row = document.createElement('div');
         row.className = 'sources-row';

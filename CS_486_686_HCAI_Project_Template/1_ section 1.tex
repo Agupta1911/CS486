@@ -1,0 +1,11 @@
+\graphicspath{{Images/}}
+
+\section{Introduction}
+
+Financial analysts and traders spend a meaningful portion of their work verifying numbers. An earnings figure quoted in a summary is only useful if it can be traced back to the document it came from, in its original formatting, with the surrounding context intact. A retrieval-augmented (RAG) chatbot can produce fluent summaries of earnings reports, news transcripts, and price histories, but it does not directly help with the verification step. The standard implementation chunks documents into overlapping 300-word passages and surfaces the top-ranked chunks in a side panel. Tables, lists, and chronological sequences are flattened into prose, and the analyst is left to reconcile the bot's claim against fragmented snippets.
+
+Our baseline prototype, built earlier in the semester, exhibits exactly this problem. In our Milestone 2 testing across three financial tasks (an overnight stock-jump explanation, a multi-ticker EV-sector comparison, and a 7-day price/news correlation), the bot's text answers were generally accurate but the right-hand evidence panel was consistently the weakest part of the experience. Headlines were cut off mid-sentence. Comparison tables were rewritten as run-on paragraphs. Day-by-day price data appeared next to news from a different week.
+
+To address this, we built an enhanced version of the prototype that replaces the static evidence panel with an Interactive Source Viewer. Bot answers now contain inline citation chips. Clicking a chip loads the full original document into the right panel and highlights the exact passage the bot cited, while keeping the conversation thread intact in the middle panel. The intent is that verification stops being a separate task and becomes something the analyst can do inline, without losing the flow of the conversation.
+
+This document proposes a study to evaluate whether the enhancement actually helps. We compare the enhanced prototype against the baseline using a between-subjects design, with the same three financial tasks, and measure differences in answer accuracy, interaction patterns, and participant perceptions of trust and cognitive load.

@@ -1,0 +1,76 @@
+Helix Robotics (HLXR) — Q2 2026 Earnings Note
+Prepared 14 Aug 2026 by R. Mendoza, mid-cap industrials desk
+
+---
+
+Quick read
+
+Beat on the top line, miss on margins, and the post-earnings reaction was uglier than the print deserved. Stock closed -7.4% on the day, recovered ~3% the day after. The story this quarter is the Phoenix-2 ramp, not the headline numbers.
+
+---
+
+Headline figures
+
+Revenue: $312.4M, up 21% YoY, vs. consensus $298M.
+GAAP EPS: $0.41. Adj. EPS: $0.58, vs. consensus $0.62.
+Gross margin: 38.1%, down 270 bps YoY. Mgmt blamed steel costs and Phoenix-2 startup overhead.
+Operating margin: 11.9%, also down YoY (was 14.2% in Q2 2025).
+FCF: -$22M for the quarter (capex spike). FY guide unchanged at $80–110M.
+
+Backlog stood at $1.41B as of June 30, vs. $1.18B at end of Q1. That's the second consecutive quarter of double-digit sequential backlog growth.
+
+---
+
+Phoenix-2 ramp
+
+This is the whole quarter, basically.
+
+The Tempe facility (Phoenix-2) shipped its first commercial unit on May 22 — three weeks behind the date Anand Krishnan walked back on the Q1 call. By end of June they were at ~14 units/week, target is 40/week by Q4 and 80/week through 2027. The 80/week number assumes the second weld cell goes live in late October, and that's the soft spot — Krishnan was noticeably less specific about that timeline this quarter than last.
+
+Yield on Phoenix-2 was 81% in June. The Salinas line runs at 94% for comparison. Mgmt thinks they hit 90%+ by year-end. We're modeling 87% exit-rate as a base case.
+
+---
+
+Customer concentration
+
+Top customer (Brightline Defense, per the 10-Q footnotes — they don't name them on the call) was 23% of revenue this quarter, up from 19% in Q1 and 14% one year ago. This is becoming a real concentration risk and the Q&A had two analysts hammer on it. CFO Renee Park said "we are actively diversifying the book" but declined to put numbers around it.
+
+The number-2 customer is somewhere around 9–10%. Long tail after that.
+
+---
+
+Notable management commentary
+
+Krishnan, on the steel cost question: "We have not been able to pass through the full input-cost increase. Our pricing in defense contracts is generally fixed at award. We expect this to normalize through 2027 as new contracts roll on at current pricing."
+
+Park, on capex: "Phoenix-2 capex is largely behind us. Q3 will see one more $30–35M tranche and then we step down materially in Q4."
+
+Krishnan on the Boeing rumors (an analyst asked directly): "We don't comment on commercial discussions. I'd characterize the relationship as productive." Read that however you want.
+
+---
+
+What's actually changed since Q1
+
+- Backlog +$230M sequential. Mostly DoD-adjacent.
+- Phoenix-2 is shipping (was zero last quarter).
+- Customer concentration ticked up another 4 points.
+- Margin compression — mostly transitory but the steel issue has legs.
+- FY revenue guide raised by ~$40M to $1.27–1.31B. EPS guide unchanged, which the sell-side took poorly.
+
+---
+
+Risks I'd flag
+
+1. Phoenix-2 weld cell #2 — if Q4 slips, the 2027 number is at risk.
+2. Brightline concentration. If that program gets descoped (rumors out of Aviation Week in July, unconfirmed) it would take ~5–7% off FY revenue.
+3. Steel input costs. Locked in through Q3, exposed Q4 onward.
+
+Lower priority but worth tracking: the SEC inquiry letter dated June 9 regarding revenue recognition on milestone-billed contracts. Disclosed in the 10-Q in a one-paragraph footnote. Mgmt didn't bring it up on the call. Probably nothing, worth watching.
+
+---
+
+Bottom line
+
+Numbers are messy, story is intact. The Phoenix-2 thesis still works if Q4 goes to plan. We're holding our $48 PT and Buy rating, but moving the weighting toward the back half of the year.
+
+Next catalyst: investor day, October 8, in Tempe.

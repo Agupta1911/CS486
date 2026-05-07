@@ -1,0 +1,161 @@
+
+\section{Research Questions}
+
+We focus on three research questions: one on task outcomes, one on interaction behavior, and one on participant perceptions. The third is the question that most directly motivates the enhancement, since the design was driven by analysts' need to trust the system enough to act on its outputs.
+
+\textbf{RQ1: Does the Interactive Source Viewer affect accuracy on factual claims in financial-analysis tasks?}
+
+\textit{Independent variable:} system condition (baseline vs.\ enhanced). \textit{Dependent variable:} accuracy of participant answers on each of the three task prompts, scored against a rubric we will pre-define before data collection. Accuracy is measured both as a binary correctness judgment per claim (e.g., did the participant report the correct revenue figure, the correct headline date, the correct ticker comparison) and as a per-task aggregate score.
+
+\textbf{H1}: Participants in the enhanced condition will reach higher accuracy than participants in the baseline condition.
+
+\textit{Rationale:} Two of the three tasks (the EV-sector comparison and the 7-day TSLA correlation) rely on cross-referencing dense numerical or temporal data. In our Milestone 2 testing, the chunked evidence panel made these tasks especially error-prone because the original tables and timelines were broken across chunks. The Source Viewer surfaces the un-chunked document with the cited line highlighted, which we expect to reduce mis-attributions and transcription errors. Prior work on retrieval-augmented systems has shown that visible source attribution tends to reduce hallucinated factual errors that the user accepts (cf.~Liu et al.\ on faithfulness in retrieval-augmented generation), and visibility of the original layout matters specifically for numerically dense documents.
+
+\medskip
+
+\textbf{RQ2: Does the Interactive Source Viewer change how participants interact with the system?}
+
+\textit{Independent variable:} system condition. \textit{Dependent variable:} interaction patterns logged automatically to MongoDB --- number of queries per task, total time on task, time per individual query, click counts on UI elements, and (for the enhanced condition only) clicks on citation chips and source-viewer scroll events.
+
+\textbf{H2(a)}: Participants in the enhanced condition will issue fewer total queries per task.
+
+\textit{Rationale:} If verification is possible inline via the chip-and-viewer mechanism, participants should be less likely to re-ask the bot for clarification or re-phrasing. They can answer their follow-up by reading the source. In the baseline condition, the equivalent verification step requires either re-asking the bot or interpreting the fragmented evidence panel, both of which we expect to surface as additional queries.
+
+\textbf{H2(b)}: Participants in the enhanced condition will spend longer per individual query (mean time between query submission and the next query).
+
+\textit{Rationale:} Citation-chip interactions take time. We expect this to manifest as longer per-query dwell times, even as total query count drops. This is a directional prediction, not a magnitude one --- we are mainly interested in whether the shape of engagement shifts from re-asking to verifying.
+
+\medskip
+
+\textbf{RQ3: Does the Interactive Source Viewer affect participant perceptions of trust, cognitive load, and usability?}
+
+\textit{Independent variable:} system condition. \textit{Dependent variable:} self-reported scores from post-task instruments. Specifically: a custom 5-item trust-and-verifiability scale (developed for this study), the NASA Task Load Index (NASA-TLX), and the System Usability Scale (SUS).
+
+\textbf{H3(a)}: Trust scores will be higher for the enhanced condition.
+
+\textit{Rationale:} Source visibility has a documented effect on user trust in AI systems, especially in domains where the user has subject-matter expertise and an incentive to verify (financial analysis is exactly that profile). The custom trust scale will probe items such as ``I felt I could verify the bot's claims when I needed to'' and ``I would rely on this system in my actual work'' --- both of which the enhancement targets directly.
+
+\textbf{H3(b)}: NASA-TLX scores (especially the mental-demand and effort sub-scales) will be lower for the enhanced condition on Tasks 2 and 3.
+
+\textit{Rationale:} These two tasks are the ones where the chunked evidence panel performs worst. We do not expect a TLX difference on Task 1 (a simpler single-document summarization), and reporting per-task TLX rather than a single aggregate avoids washing out a real effect.
+
+\textbf{H3(c)}: SUS scores will be higher for the enhanced condition.
+
+\textit{Rationale:} Less confident than H3(a) and H3(b), since SUS captures general usability and the enhancement adds UI complexity (a new interaction mode, a new panel). Whether the verification benefit outweighs the additional complexity is genuinely an open question, and we want to capture it.
+
+\section{Methodology}
+
+\subsection{Participants}
+
+Undergraduate and graduate students enrolled in CS 486 / CS 686 at the University of San Francisco. We will aim to recruit at minimum 16 participants (8 per condition), with the understanding that the actual yield depends on enrollment in the class. Participants will be assigned to conditions automatically by the system: odd participant IDs are routed to the baseline (systemID 1), even IDs to the enhanced (systemID 2). The assignment is implemented at the URL level, so the participant does not see condition labels and the moderator does not need to remember the mapping.
+
+We do not require prior experience with financial markets. We do, however, treat self-reported financial literacy as a covariate (collected in the pre-task questionnaire) so that any condition difference can be checked against it.
+
+\subsection{Data Collection}
+
+We collect data from two sources: the system itself and Qualtrics questionnaires.
+
+From the system (logged to MongoDB, indexed by participant ID):
+
+\begin{itemize}
+    \item All chat interactions (user input, bot response, retrieved evidence, retrieval method, confidence metrics, timestamp).
+    \item All UI events --- clicks, hovers, focus, dropdown changes, redirects between pages.
+    \item For the enhanced condition only: citation-chip clicks, source-viewer opens, and which document was opened.
+    \item Derived measures: time-on-task per task, total queries per task, time between queries, total session duration.
+\end{itemize}
+
+From Qualtrics:
+
+\begin{itemize}
+    \item Demographics (age, education level, prior AI-chatbot experience, self-rated financial literacy).
+    \item Pre-task: expected task difficulty, confidence, prior knowledge of the specific tickers used.
+    \item Post-task: per-task self-reported accuracy, NASA-TLX, SUS, custom trust-and-verifiability scale, and a free-text item asking what was hardest about the task.
+\end{itemize}
+
+For each task, accuracy will be scored after the session against a rubric. The rubric will list 3--5 factual claims per task that a correct answer should contain (e.g., for Task 1: NVDA's revenue figure, the YoY growth rate, the specific news headline that explains the move). We will score whether each is present and correctly stated.
+
+\subsection{Questionnaires \& Assessments}
+
+\textbf{Demographics questionnaire (pre).} Age range, year in program, prior experience with AI chatbots (5-point Likert), prior experience with financial analysis tools (5-point Likert), self-rated financial literacy (5-point Likert).
+
+\textit{Justification:} financial literacy is plausibly correlated with task accuracy, so we want it as a covariate. Prior chatbot experience is included because participants who use AI tools daily may already have well-developed verification habits that interact with the enhancement.
+
+\textbf{Pre-task questionnaire.} For each of the three tasks, expected difficulty (1--7), expected confidence in their final answer (1--7), and a one-item familiarity check (``How familiar are you with [NVDA / TSLA / RIVN \& LCID]?'').
+
+\textit{Justification:} pre-task expectations let us check whether participants in the two conditions started from similar baselines. The familiarity check is to flag participants who already know answers from outside knowledge.
+
+\textbf{Post-task questionnaire.} Administered once after all three tasks are complete. Contains:
+
+\begin{itemize}
+    \item NASA Task Load Index (raw, six sub-scales) reported separately for each task.
+    \item System Usability Scale (10 items) on the prototype overall.
+    \item A custom 5-item Trust \& Verifiability scale (described below), 7-point Likert.
+    \item Per-task self-reported accuracy (``How confident are you that your answers were correct?'').
+    \item Open-ended: ``What was hardest about the verification step?'' and ``What would you change about the system?''
+\end{itemize}
+
+\textit{Justification:} NASA-TLX and SUS are standard, validated instruments and let our results be compared against the broader literature. The custom trust scale targets the specific construct the enhancement is designed to affect, and is necessary because no off-the-shelf instrument we are aware of measures verifiability of AI claims at the right grain.
+
+\textit{Custom Trust \& Verifiability scale items (7-point Likert, anchored ``strongly disagree'' to ``strongly agree''):}
+\begin{enumerate}
+    \item I felt I could verify the bot's factual claims when I wanted to.
+    \item When the bot gave me a number, I knew where it came from.
+    \item I would rely on this system in my own work.
+    \item Verifying the bot's answers fit naturally into my workflow with the system.
+    \item The bot's evidence was easy to interpret.
+\end{enumerate}
+
+\textit{Links to questionnaires (Qualtrics):}
+
+\begin{itemize}
+    \item Demographics: \url{https://usfca.qualtrics.com/jfe/form/SV_7VREZRzBnA9Jv94}
+    \item Pre-task: \textit{[link to be added once published]}
+    \item Post-task: \textit{[link to be added once published]}
+\end{itemize}
+
+\subsection{Tasks}
+
+Three tasks, all set in a financial-analysis scenario. Participants will be told, in framing: ``You are working on a junior analyst's desk. Your senior analyst has asked you to use the AI assistant to answer the following three questions. Your answers will be reviewed.''
+
+\textbf{Task 1 --- NVDA overnight jump.} Participants are given access (via document upload) to NVDA's most recent quarterly earnings report and a curated set of recent news headlines. They are told NVDA jumped 10\% overnight, and asked to determine why and whether the move is sustainable. Expected output: a short written answer with the key earnings figures and the relevant news driver(s).
+
+\textbf{Task 2 --- EV sector comparison.} Participants are given historical data sheets and news transcripts for TSLA, RIVN, and LCID. They are asked to compare recent volume trends and price volatility across the three tickers and to identify shared risks. Expected output: a comparative summary citing specific volume / volatility figures and at least one shared risk.
+
+\textbf{Task 3 --- TSLA price-dip correlation.} Participants are given 7 days of TSLA price history and major news articles from that period. They are told there was a recent dip and asked whether it correlates with specific negative press or whether it appears to be a technical correction. Expected output: a per-day correlation between price moves and news, with a verdict.
+
+These three tasks are deliberately chosen to stress different verification patterns: Task 1 is single-document, Task 2 is multi-document comparison (where chunking destroys side-by-side comparability), and Task 3 is timeline-driven (where chunking destroys chronological ordering). The Source Viewer's value should differ across the three, which is why we report results per-task in addition to aggregate.
+
+\subsection{Study Protocol}
+
+The session is run one participant at a time, in person, with a moderator present. Estimated duration: 45 minutes.
+
+\begin{enumerate}
+    \item \textit{Consent and setup} (5 min). Moderator explains the study, participant signs consent. Moderator enters the participant ID into the homepage of the system, which routes the participant to the correct condition automatically.
+    \item \textit{Demographics questionnaire} (5 min). Participant completes the demographics survey on Qualtrics.
+    \item \textit{Pre-task questionnaire} (3 min). Participant completes the pre-task survey on Qualtrics.
+    \item \textit{Task 1} (8 min). Participant reads Task 1 instructions, uploads the relevant document(s), interacts with the chatbot, and writes a final answer.
+    \item \textit{Task 2} (10 min). Same structure for Task 2.
+    \item \textit{Task 3} (10 min). Same structure for Task 3.
+    \item \textit{Post-task questionnaire} (3 min). Participant completes NASA-TLX, SUS, custom trust scale, and open-ended items.
+    \item \textit{Debrief} (1 min). Moderator thanks the participant and answers any questions.
+\end{enumerate}
+
+The full Study Workflow is implemented at \url{https://milestone-3-ozgg.onrender.com/} (homepage). After entering a participant ID, the participant is routed through the workflow page, which links each step in order.
+
+\subsection{Study Design}
+
+\textbf{Between-subjects.} Each participant is assigned to one condition only --- either the baseline (systemID 1) or the enhanced (systemID 2) prototype. Assignment is determined by the parity of the participant ID, which the moderator types in at the start of the session. Even-numbered IDs go to the enhanced condition, odd-numbered to the baseline.
+
+\textit{Why between-subjects:} The three financial tasks involve specific tickers and specific data. If a participant completed them once with the baseline and again with the enhanced prototype, the second pass would benefit from learning about NVDA, TSLA, RIVN, and LCID, and we could not separate that learning effect from the effect of the system. Counterbalancing the order would help, but with only three tasks the carryover risk is large. A between-subjects design also matches the realistic deployment scenario --- an analyst would use one system, not two.
+
+The cost is statistical power. We mitigate this with a moderately sized recruitment target and, where appropriate, repeated-measures analysis on the within-participant per-task scores.
+
+\subsection{Data Analysis}
+
+\textbf{For RQ1 (accuracy):} Per-task accuracy scores will be compared between conditions using independent-samples t-tests if normality holds, Mann-Whitney U otherwise. We will also fit a mixed-effects model with condition as the between-subjects factor, task as the within-subjects factor, and participant as a random effect, to test whether the condition effect varies across the three tasks. Binary per-claim accuracy will be analyzed with chi-square or Fisher's exact tests.
+
+\textbf{For RQ2 (interaction patterns):} Number of queries per task and time per query will be compared between conditions using the same t-test / Mann-Whitney approach. For the enhanced condition only, we will report descriptive statistics on citation-chip clicks per task to characterize how the verification mechanism is actually used in practice.
+
+\textbf{For RQ3 (perceptions):} NASA-TLX (raw, per sub-scale, per task) and SUS scores will be compared with t-tests / Mann-Whitney. The custom trust scale will be reported both at the item level and as an averaged composite, with internal consistency reported (Cronbach's $\alpha$). Open-ended responses will be coded thematically, with two coders independently coding a 25\% subsample to compute inter-rater reliability before one coder completes the rest.
+
+We will report effect sizes (Cohen's $d$ or $r$) alongside $p$-values throughout. With a likely small sample, effect sizes will be more informative than significance tests.
