@@ -1,0 +1,87 @@
+NVIDIA — News Headlines and Wire Coverage
+Period: April 21 – May 6, 2026
+Compiled from Reuters, Bloomberg, CNBC, and analyst desk notes
+
+---
+
+May 6, 2026 (today, pre-market and intraday)
+
+[Bloomberg, 4:12 AM ET]
+"NVIDIA Surges 10% Premarket on Earnings Blowout, Guidance Raise"
+NVIDIA shares climbed roughly 10% in premarket trading after the company reported Q1 FY27 revenue of $56.8B, well above the $52.4B consensus, and guided Q2 to $61B vs. Street at $55B. Several Wall Street analysts raised their price targets within hours of the report.
+
+[CNBC, 6:45 AM ET]
+"Wall Street Reacts to NVIDIA's 'Eye-Popping' Quarter"
+Morgan Stanley raised its NVDA price target to $185 from $160, citing "the cleanest data center quarter we've seen in two years." Bank of America moved to $190 from $170. Bernstein, which had been the most cautious major desk on NVIDIA, raised to $172 from $148 and removed its underweight rating.
+
+[Reuters, 9:01 AM ET]
+"NVIDIA's Huang Says Rubin Demand Already Booked With Hyperscalers"
+On the conference call last night, CEO Jensen Huang said the company has received production-volume commitments from "all major hyperscalers" for the Rubin platform, which is sampling in the second half of calendar 2026. The comment was unusually direct compared to his prior caginess on next-gen demand.
+
+[Bloomberg, 9:22 AM ET]
+"Microsoft's NVIDIA Spend Said to Have Doubled in 2026 Calendar Year"
+Sources familiar with the matter say Microsoft's NVIDIA hardware purchases for calendar 2026 are tracking at roughly double 2025 levels, driven by Azure capacity buildout for OpenAI workloads. NVIDIA declined to comment on individual customer relationships. Huang on last night's call called the Microsoft partnership "materially expanded."
+
+---
+
+May 5, 2026 (earnings day, post-close)
+
+[CNBC, 4:01 PM ET]
+"NVIDIA Reports Q1 FY27 Results: Revenue $56.8B, EPS $1.18 Adjusted"
+NVIDIA reported revenue of $56.8 billion for the first quarter of fiscal 2027, ahead of consensus estimates of $52.4 billion. Adjusted EPS came in at $1.18, also ahead of the $1.02 consensus. Data center revenue was $50.1 billion. The company guided Q2 revenue to approximately $61 billion.
+
+[Reuters, 5:32 PM ET, on the call]
+"NVIDIA's Kress: Blackwell Yields 'Well Above 80%', Constraints Shifting to Networking"
+CFO Colette Kress said on the earnings call that Blackwell production yields are now well above 80%, with the manufacturing constraint having shifted from compute silicon to networking products and rack-level integration.
+
+---
+
+May 2, 2026
+
+[Reuters]
+"Power Crunch Slowing AI Data Center Buildouts, Industry Says"
+Hyperscale data center operators are increasingly citing power availability — not chip availability — as the main bottleneck slowing AI capacity expansion. Several site projects in Northern Virginia and central Texas have been delayed by 6-12 months pending utility interconnection approvals. NVIDIA, AMD, and Broadcom have all flagged this trend on recent calls.
+
+---
+
+April 28, 2026
+
+[Bloomberg]
+"Stellantis Selects NVIDIA DRIVE for Next-Gen Vehicle Platform"
+Stellantis announced today that it will use NVIDIA's DRIVE Thor platform for its next-generation electric vehicles starting with the 2028 model year, with development beginning immediately. Volume deliveries to begin in late 2027.
+
+---
+
+April 24, 2026
+
+[CNBC]
+"Treasury, Commerce Discussing New China Export Rules for AI Chips"
+The Treasury and Commerce Departments are reportedly evaluating an additional round of restrictions on AI chip exports to China, which could affect a downgraded version of Blackwell that NVIDIA had been preparing specifically for the Chinese market. NVIDIA shares dipped 2.4% on the report. NVIDIA declined to comment.
+
+---
+
+April 22, 2026
+
+[Reuters]
+"Memory Suppliers Raising HBM Prices Amid AI Demand"
+SK Hynix, Samsung, and Micron are all raising prices on HBM3e and HBM4 memory used in AI accelerators, with quarterly increases of 8-12% reported by industry sources. The cost increases are expected to flow through to AI chip pricing over the next two quarters.
+
+---
+
+April 21, 2026
+
+[Bloomberg]
+"AMD Reports Q1, Misses on AI Accelerator Revenue"
+AMD reported Q1 results that missed Wall Street expectations for its AI accelerator business, with MI350 shipments coming in below internal forecasts. Several analysts noted the gap reinforces NVIDIA's competitive lead in the AI training market. AMD shares fell 7% in extended trading; NVIDIA shares rose 1.8% on the print.
+
+---
+
+Analyst commentary roundup (post-NVDA earnings, May 5-6)
+
+Morgan Stanley: "The cleanest data center quarter we've seen in two years. Networking attach is the new variable to watch — at 18% of DC revenue and rising, it's becoming a meaningful margin lever." PT raised to $185 from $160.
+
+Bank of America: "Guidance is doing all the work here. A $61B Q2 against $55B consensus is the largest forward-quarter raise NVIDIA has put up since the initial Blackwell ramp." PT raised to $190 from $170.
+
+Bernstein: "We were wrong to be cautious. Removing our underweight. The Rubin commentary in particular changed our view — production commitments this early in the cycle is not consistent with our prior thesis on saturation risk." PT to $172 from $148.
+
+Wells Fargo: "The 10% premarket move looks justified by the guide. We do flag networking supply as a new capacity risk and the China figure ($1.1B, down from $1.4B) as an ongoing erosion."

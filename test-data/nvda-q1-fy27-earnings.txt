@@ -1,0 +1,76 @@
+NVIDIA Corporation (NASDAQ: NVDA)
+First Quarter Fiscal 2027 Earnings Summary
+Quarter ended April 27, 2026
+Reported after market close, May 5, 2026
+
+---
+
+Headline numbers
+
+Revenue: $56.8 billion, up 38% year-over-year and up 11% sequentially. Consensus was $52.4B.
+GAAP EPS: $1.04. Non-GAAP EPS: $1.18, vs. consensus $1.02.
+GAAP gross margin: 77.1%. Non-GAAP gross margin: 78.6%, up 90 basis points sequentially.
+Operating income (non-GAAP): $39.2 billion.
+Free cash flow: $27.8 billion in the quarter.
+
+Outlook for Q2 FY27: revenue guided to $61.0B ± 2%, ahead of the prior Street estimate of $55.1B. Non-GAAP gross margin guided to 78.5%–79.0%.
+
+---
+
+Segment results
+
+Data Center: $50.1 billion, up 44% YoY, up 13% sequentially.
+This segment now represents 88% of total revenue. Sequential growth was driven by Blackwell shipments to hyperscale customers and the early ramp of the Rubin platform announced in March. CFO Colette Kress noted on the call that Blackwell production yields are now "well above 80%" and that constraints are shifting from compute to networking and rack-level integration.
+
+Gaming: $3.4 billion, up 9% YoY, flat sequentially. RTX 50-series demand remains healthy heading into back-to-school.
+
+Professional Visualization: $620 million, up 21% YoY.
+Automotive: $700 million, up 67% YoY. Mgmt called out the Mercedes-Benz design win going into volume production this quarter and a new Stellantis program announced in late April.
+OEM and Other: $980 million.
+
+---
+
+Notable management commentary
+
+Jensen Huang, on the call:
+"Demand for Blackwell continues to outstrip supply. We expect this to continue through fiscal 2027 and into fiscal 2028. Rubin sampling is on track for the second half of this calendar year, and we have already received commitments for production volumes from all major hyperscalers."
+
+Colette Kress, CFO, on guidance:
+"Our Q2 outlook reflects the continued ramp of Blackwell, the early contribution of Rubin sampling revenue, and a modest improvement in supply availability. We are not assuming any easing of customer demand."
+
+Huang, asked directly about the rumored Microsoft expansion deal:
+"We don't comment on individual customer commitments, but I would say our partnership with Microsoft has expanded materially over the past two quarters. You will hear more from us at GTC in October."
+
+---
+
+Customer concentration (per the 10-Q footnotes)
+
+Direct customer concentration remains elevated. Two customers each represented more than 10% of total revenue this quarter (mgmt does not name them; Street consensus is Microsoft and Meta). Combined, the top four direct customers represented approximately 47% of revenue. CFO Kress repeated the standard "we are diversifying our customer base" language but offered no specific targets.
+
+---
+
+Capital return
+
+$10.0 billion of share repurchases in the quarter. Quarterly dividend of $0.01 per share declared.
+The Board authorized an additional $50 billion to the existing repurchase program, with no expiration.
+
+---
+
+Forward-looking notes
+
+Mgmt reaffirmed their full-year FY27 framework: Blackwell shipments accelerating through the year, Rubin sampling in 2H calendar 2026, and production Rubin in 1H calendar 2027. Networking attach rates (Spectrum-X, NVLink) continued to climb, with networking now representing approximately 18% of data center revenue, up from 14% last quarter.
+
+Inventory rose 9% sequentially to $14.2 billion, which mgmt characterized as "intentional positioning ahead of the Rubin ramp."
+
+Risks called out in the prepared remarks:
+- Export control changes affecting China data center sales (China revenue continues to be reported separately; was $1.1 billion this quarter, down from $1.4 billion last quarter).
+- Power availability at hyperscale data center sites — mgmt referenced this as the "primary near-term gating factor" for customer deployments.
+- Networking supply (NVLink switches and Spectrum-X) — mgmt acknowledged this is now tighter than GPU supply.
+
+---
+
+Bottom line
+
+Significant beat across revenue, margins, and EPS. Forward guidance is the standout — $61B vs. $55B consensus is a ~10% raise to the next quarter, which implies management sees no demand softness. The Microsoft commentary on the call was the closest thing to confirmation of the rumored expansion deal, and the Rubin update was earlier and more specific than expected.
+
+Conference call: May 5, 2026, 5:30 PM ET. Transcript and slides available on NVIDIA Investor Relations.

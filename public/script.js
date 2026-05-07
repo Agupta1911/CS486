@@ -105,6 +105,14 @@ if (String(systemID) !== '2') {
     if (sv) sv.style.display = 'none';
 }
 
+// ─── Hide document-management panel during participant sessions ──────────────
+// Documents are pre-loaded by the moderator; participants should not see upload UI.
+
+if (params.get('participantID')) {
+    const docPanel = document.getElementById('doc-panel');
+    if (docPanel) docPanel.style.display = 'none';
+}
+
 // ─── Element references (chat page only) ─────────────────────────────────────
 
 const inputField        = document.getElementById('user-input');
