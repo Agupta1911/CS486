@@ -155,7 +155,7 @@ app.post('/chat', async (req, res) => {
         if (method === 'tfidf' || method === 'tf-idf') {
             // TF-IDF: use in-memory index
             const results = retrievalService.retrieveTFIDF(userInput, 3);
-            retrievedEvidence = results.map(r => ({ chunk: r.chunk, score: r.score }));
+            retrievedEvidence = results.map(r => ({ chunk: r.chunk, score: r.score, documentId: r.documentId, filename: r.filename }));
         } else {
             // Semantic: embed the query, then compare against stored chunk embeddings
             const docs = await Document.find(
@@ -174,7 +174,7 @@ app.post('/chat', async (req, res) => {
             if (allChunks.length > 0) {
                 const queryEmbedding = await embeddingService.generateEmbedding(userInput);
                 const results = retrievalService.retrieveSemantic(queryEmbedding, allChunks, 3);
-                retrievedEvidence = results.map(r => ({ chunk: r.chunk, score: r.score }));
+                retrievedEvidence = results.map(r => ({ chunk: r.chunk, score: r.score, documentId: r.documentId, filename: r.filename }));
             }
         }
 

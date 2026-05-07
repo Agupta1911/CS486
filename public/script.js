@@ -303,6 +303,12 @@ function showSourceDocument(filename, fullText, chunkText) {
 
     const content = document.getElementById('source-content');
 
+    if (!fullText) {
+        content.innerHTML = '<p class="no-data">Document content not available.</p>';
+        document.getElementById('source-statusbar').textContent = 'Content unavailable';
+        return;
+    }
+
     // Find chunk position in the full text for highlighting
     let start = fullText.indexOf(chunkText);
     let end   = start === -1 ? -1 : start + chunkText.length;
