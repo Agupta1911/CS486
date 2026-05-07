@@ -444,10 +444,8 @@ window.onload = function () {
                 userMsg.textContent = 'You: ' + interaction.userInput;
                 messagesContainer.appendChild(userMsg);
 
-                const botMsg = document.createElement('div');
-                botMsg.className = 'msg-bot';
-                botMsg.textContent = 'Bot: ' + interaction.botResponse;
-                messagesContainer.appendChild(botMsg);
+                const botEl = renderBotMessage(interaction.botResponse, interaction.retrievedEvidence || []);
+                messagesContainer.appendChild(botEl);
             });
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
         })
