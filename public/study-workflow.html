@@ -14,33 +14,54 @@
         <h1>Study Workflow</h1>
         <hr>
         <div class="card" style="margin-top: 20px; padding: 20px;">
-            <p>Please complete the following steps in order.</p>
-            <ol id="workflow-list" style="text-align: left; padding-left: 20px;">
-                <li style="margin: 12px 0;">
-                    <button id="survey-btn" class="workflow-btn" type="button">
-                        1. Complete the demographics questionnaire.
-                    </button>
+            <p>Please complete the following steps <strong>in order</strong>.</p>
+            <ol id="workflow-list" style="text-align: left; padding-left: 0; list-style: none; margin-top: 16px;">
+
+                <li class="step-item">
+                    <div class="step-row">
+                        <button id="survey-btn" class="workflow-btn" type="button">
+                            1. Complete the demographics questionnaire
+                        </button>
+                        <span class="step-check" id="check-demographics">&#10003;</span>
+                    </div>
                 </li>
-                <li style="margin: 12px 0;">
-                    <button id="pretask-btn" class="workflow-btn" type="button">
-                        2. Complete the pre-task questionnaire.
-                    </button>
+
+                <li class="step-item">
+                    <div class="step-row">
+                        <button id="pretask-btn" class="workflow-btn" type="button">
+                            2. Complete the pre-task questionnaire
+                        </button>
+                        <span class="step-check" id="check-pretask">&#10003;</span>
+                    </div>
                 </li>
-                <li style="margin: 12px 0;">
-                    <button id="task-btn" class="workflow-btn" type="button">
-                        3. Read the task.
-                    </button>
+
+                <li class="step-item">
+                    <div class="step-row">
+                        <button id="task-btn" class="workflow-btn" type="button">
+                            3. Read the task
+                        </button>
+                        <span class="step-check" id="check-task">&#10003;</span>
+                    </div>
                 </li>
-                <li style="margin: 12px 0;">
-                    <button id="prototype-btn" class="workflow-btn" type="button">
-                        4. Use the AI system to complete the task.
-                    </button>
+
+                <li class="step-item">
+                    <div class="step-row">
+                        <button id="prototype-btn" class="workflow-btn" type="button">
+                            4. Use the AI system to complete the task
+                        </button>
+                        <span class="step-check" id="check-prototype">&#10003;</span>
+                    </div>
                 </li>
-                <li style="margin: 12px 0;">
-                    <button id="posttask-btn" class="workflow-btn" type="button">
-                        5. Complete the post-task questionnaire.
-                    </button>
+
+                <li class="step-item">
+                    <div class="step-row">
+                        <button id="posttask-btn" class="workflow-btn" type="button">
+                            5. Complete the post-task questionnaire
+                        </button>
+                        <span class="step-check" id="check-posttask">&#10003;</span>
+                    </div>
                 </li>
+
             </ol>
         </div>
     </section>

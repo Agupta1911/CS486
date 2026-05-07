@@ -27,36 +27,40 @@ function logEvent(eventType, elementName) {
 
 // ─── Study Workflow page ──────────────────────────────────────────────────────
 
-function redirectToSurvey(route, label) {
-    fetch(route, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ participantID })
-    })
-        .then(response => response.text())
-        .then(url => {
-            logEvent('redirect', label);
-            window.location.href = url;
-        })
-        .catch(error => {
-            console.error(`Error redirecting to ${label}:`, error);
-            alert('There was an error redirecting to the survey. Please try again.');
-        });
+function markStepDone(step) {
+    if (participantID) localStorage.setItem(`${participantID}_step_${step}`, 'done');
+}
+
+function updateWorkflowProgress() {
+    const steps = ['demographics', 'pretask', 'task', 'prototype', 'posttask'];
+    const btnIds = { demographics: 'survey-btn', pretask: 'pretask-btn', task: 'task-btn', prototype: 'prototype-btn', posttask: 'posttask-btn' };
+
+    steps.forEach(step => {
+        const done  = participantID && localStorage.getItem(`${participantID}_step_${step}`) === 'done';
+        const check = document.getElementById(`check-${step}`);
+        const btn   = document.getElementById(btnIds[step]);
+        if (check) check.style.display = done ? 'inline' : 'none';
+        if (btn)   btn.classList.toggle('step-done', done);
+    });
+}
+
+// Handle ?completed=X coming back from Qualtrics or other pages
+if (window.location.pathname.includes('study-workflow.html')) {
+    const completed = params.get('completed');
+    if (completed) {
+        markStepDone(completed);
+        window.history.replaceState({}, '',
+            `/study-workflow.html?participantID=${encodeURIComponent(participantID)}&systemID=${encodeURIComponent(systemID)}`
+        );
+    }
+    updateWorkflowProgress();
 }
 
 if (document.getElementById('survey-btn')) {
-    document.getElementById('survey-btn').addEventListener('click',
-        () => redirectToSurvey('/redirect-to-survey', 'Demographics Survey'));
-}
-
-if (document.getElementById('pretask-btn')) {
-    document.getElementById('pretask-btn').addEventListener('click',
-        () => redirectToSurvey('/redirect-to-pretask', 'Pre-Task Survey'));
-}
-
-if (document.getElementById('posttask-btn')) {
-    document.getElementById('posttask-btn').addEventListener('click',
-        () => redirectToSurvey('/redirect-to-posttask', 'Post-Task Survey'));
+    document.getElementById('survey-btn').addEventListener('click', () => {
+        logEvent('click', 'survey-btn');
+        window.location.href = `https://usfca.qualtrics.com/jfe/form/SV_7VREZRzBnA9Jv94?participantID=${encodeURIComponent(participantID)}&systemID=${encodeURIComponent(systemID)}`;
+    });
 }
 
 if (document.getElementById('pretask-btn')) {
@@ -73,15 +77,24 @@ if (document.getElementById('posttask-btn')) {
     });
 }
 
+if (document.getElementById('task-btn')) {
+    document.getElementById('task-btn').addEventListener('click', () => {
+        logEvent('click', 'task-btn');
+        window.location.href = `/task.html?participantID=${encodeURIComponent(participantID)}&systemID=${encodeURIComponent(systemID)}`;
+    });
+}
+
 if (document.getElementById('prototype-btn')) {
     document.getElementById('prototype-btn').addEventListener('click', () => {
+        logEvent('click', 'prototype-btn');
         window.location.href = `/chat.html?participantID=${encodeURIComponent(participantID)}&systemID=${encodeURIComponent(systemID)}`;
     });
 }
 
-if (document.getElementById('task-btn')) {
-    document.getElementById('task-btn').addEventListener('click', () => {
-        window.location.href = `/task.html?participantID=${encodeURIComponent(participantID)}&systemID=${encodeURIComponent(systemID)}`;
+if (document.getElementById('finish-btn')) {
+    document.getElementById('finish-btn').addEventListener('click', () => {
+        markStepDone('prototype');
+        window.location.href = `/study-workflow.html?participantID=${encodeURIComponent(participantID)}&systemID=${encodeURIComponent(systemID)}&completed=prototype`;
     });
 }
 

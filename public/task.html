@@ -65,7 +65,7 @@
         const systemID      = params.get('systemID')      || localStorage.getItem('systemID');
 
         document.getElementById('back-btn').addEventListener('click', () => {
-            window.location.href = `/study-workflow.html?participantID=${encodeURIComponent(participantID)}&systemID=${encodeURIComponent(systemID)}`;
+            window.location.href = `/study-workflow.html?participantID=${encodeURIComponent(participantID)}&systemID=${encodeURIComponent(systemID)}&completed=task`;
         });
     </script>
 
